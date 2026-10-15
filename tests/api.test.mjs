@@ -44,12 +44,8 @@ async function startServer() {
     env: { ...process.env, PORT: String(BASE_PORT) },
   });
 
-  serverProcess.stdout.on("data", (d) => {
-    // Suppress verbose output unless error
-  });
-  serverProcess.stderr.on("data", (d) => {
-    // console.error(d.toString());
-  });
+  serverProcess.stdout.resume();
+  serverProcess.stderr.resume();
 
   await waitForServer(BASE_URL);
   console.log(`✅ Server online at ${BASE_URL}`);
@@ -96,7 +92,6 @@ async function runSuite() {
     let userACookie = "";
     let userAId = "";
     let userBCookie = "";
-    let userBId = "";
     let userATxId = "";
     let systemCategoryId = "";
 
@@ -154,7 +149,7 @@ async function runSuite() {
         }),
       });
       const regBBody = await regBRes.json();
-      userBId = regBBody.data.user.id;
+      assert(regBBody.data?.user?.id, "User B registered successfully");
       userBCookie = regBRes.headers.get("set-cookie").split(";")[0];
     });
 
