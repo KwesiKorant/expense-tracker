@@ -41,17 +41,17 @@ export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartPr
           No expenditure data recorded for this month.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-          {/* Donut graphic */}
-          <div className="chart-containment relative w-full h-[220px]">
+        <div className="flex flex-col gap-4">
+          {/* Centered Donut Graphic */}
+          <div className="chart-containment relative w-full h-[180px] flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius={58}
-                  outerRadius={84}
+                  innerRadius={52}
+                  outerRadius={76}
                   paddingAngle={3}
                   dataKey="amount"
                   strokeWidth={0}
@@ -95,29 +95,41 @@ export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartPr
             </div>
           </div>
 
-          {/* Legend Items */}
-          <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+          {/* Full-Width Legend List with Progress Meters */}
+          <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1">
             {data.map((item) => (
               <div
                 key={item.category}
-                className="flex items-center justify-between text-xs p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/50 transition-colors"
+                className="group p-2 rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/50 transition-colors"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="truncate font-medium text-zinc-800 dark:text-zinc-200">
-                    {item.category}
-                  </span>
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                      {item.category}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                      ${item.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </span>
+                    <span className="text-[11px] text-zinc-400 font-mono w-11 text-right">
+                      {item.percentage}%
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                    ${item.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                  </span>
-                  <span className="text-[11px] text-zinc-400 w-10 text-right">
-                    {item.percentage}%
-                  </span>
+                {/* Thin Subtly Animated Progress Track */}
+                <div className="w-full h-1 bg-zinc-200/60 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${item.percentage}%`,
+                      backgroundColor: item.color,
+                    }}
+                  />
                 </div>
               </div>
             ))}

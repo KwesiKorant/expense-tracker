@@ -103,7 +103,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-md shadow-indigo-600/25 disabled:opacity-50 transition-colors cursor-pointer"
+          className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-md shadow-indigo-600/25 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
         >
           {isLoading ? (
             <>
@@ -125,7 +125,7 @@ function LoginForm() {
         <button
           type="button"
           onClick={handleFillDemo}
-          className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+          className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline active:scale-95 transition-all cursor-pointer"
         >
           <ShieldCheck className="w-3.5 h-3.5" />
           Fill Demo Account

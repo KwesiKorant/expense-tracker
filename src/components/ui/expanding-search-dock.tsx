@@ -80,7 +80,7 @@ export function ExpandingSearchDock({
               <button
                 type="button"
                 onClick={handleClear}
-                className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-md"
+                className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-md active:scale-90 transition-all cursor-pointer"
                 aria-label="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
@@ -100,7 +100,7 @@ export function ExpandingSearchDock({
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
             type="button"
             onClick={handleOpen}
-            className="flex items-center gap-2 h-10 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 shadow-sm transition-colors"
+            className="flex items-center gap-2 h-10 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 shadow-sm transition-all duration-150 cursor-pointer"
             aria-label="Search transactions"
           >
             <Search className="w-4 h-4" />

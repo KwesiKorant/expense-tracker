@@ -67,6 +67,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
                 tick={{ fontSize: 11, fill: "#888888" }}
               />
               <Tooltip
+                cursor={{ fill: "rgba(120, 120, 120, 0.08)", radius: 6 }}
                 content={({ active, payload, label }) => {
                   if (!active || !payload || !payload.length) return null;
                   return (

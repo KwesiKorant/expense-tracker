@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ArrowDownRight, ArrowUpRight, Loader2 } from "lucide-react";
 import { useMobileSheetDrag } from "@/hooks/use-mobile-sheet-drag";
+import { useToast } from "@/components/ui/toast";
 
 interface CategoryOption {
   id: string;
@@ -27,6 +28,7 @@ export function TransactionSheet({
   categories,
 }: TransactionSheetProps) {
   const { isMobile, backdropOpacity, dragProps } = useMobileSheetDrag(onClose);
+  const toast = useToast();
 
   const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
   const [amount, setAmount] = useState("");
@@ -84,6 +86,10 @@ export function TransactionSheet({
       // Reset form
       setAmount("");
       setDescription("");
+      toast.success(
+        "Transaction recorded",
+        `Successfully logged $${parsedAmount.toFixed(2)} (${type.toLowerCase()})`
+      );
       onSuccess();
       onClose();
     } catch (err: unknown) {
@@ -131,7 +137,7 @@ export function TransactionSheet({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg active:scale-90 transition-all cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -150,7 +156,7 @@ export function TransactionSheet({
                 <button
                   type="button"
                   onClick={() => setType("EXPENSE")}
-                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer ${
                     type === "EXPENSE"
                       ? "bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-sm"
                       : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -162,7 +168,7 @@ export function TransactionSheet({
                 <button
                   type="button"
                   onClick={() => setType("INCOME")}
-                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer ${
                     type === "INCOME"
                       ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm"
                       : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -247,7 +253,7 @@ export function TransactionSheet({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-md shadow-indigo-600/20 disabled:opacity-50 transition-colors cursor-pointer"
+                className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-md shadow-indigo-600/20 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>

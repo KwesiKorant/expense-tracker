@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
+import { useToast } from "@/components/ui/toast";
 
 interface Category {
   id: string;
@@ -76,15 +77,20 @@ export function TransactionTable({
   isLoading = false,
 }: TransactionTableProps) {
   const [actingId, setActingId] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleAction = async (id: string, action: "archive" | "restore") => {
     setActingId(id);
     try {
       if (action === "archive") {
         await onArchive(id);
+        toast.success("Transaction archived", "Record moved to archived ledger view.");
       } else {
         await onRestore(id);
+        toast.success("Transaction restored", "Record returned to active calculations.");
       }
+    } catch {
+      toast.error("Action failed", "Unable to update transaction state.");
     } finally {
       setActingId(null);
     }
@@ -128,7 +134,7 @@ export function TransactionTable({
           <a
             href="/api/v1/transactions/export"
             download="transactions-export.csv"
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 text-xs font-medium shadow-sm transition-colors"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-[0.98] text-xs font-medium shadow-sm transition-all duration-150"
           >
             <Download className="w-3.5 h-3.5" />
             Export CSV
@@ -138,7 +144,7 @@ export function TransactionTable({
           <button
             type="button"
             onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/20 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/20 active:scale-[0.98] transition-all duration-150 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add Entry
@@ -154,7 +160,7 @@ export function TransactionTable({
             <button
               type="button"
               onClick={() => onTypeChange("")}
-              className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
                 selectedType === ""
                   ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -165,7 +171,7 @@ export function TransactionTable({
             <button
               type="button"
               onClick={() => onTypeChange("EXPENSE")}
-              className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
                 selectedType === "EXPENSE"
                   ? "bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -176,7 +182,7 @@ export function TransactionTable({
             <button
               type="button"
               onClick={() => onTypeChange("INCOME")}
-              className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
                 selectedType === "INCOME"
                   ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -204,7 +210,7 @@ export function TransactionTable({
           <button
             type="button"
             onClick={() => onToggleArchived(!showArchived)}
-            className={`h-9 px-3 rounded-xl border text-xs font-medium transition-colors cursor-pointer ${
+            className={`h-9 px-3 rounded-xl border text-xs font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
               showArchived
                 ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400 font-semibold"
                 : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
@@ -247,7 +253,7 @@ export function TransactionTable({
             ) : transactions.length === 0 ? (
               <tr>
                 <td colSpan={5} className="py-12 text-center text-zinc-400">
-                  <div className="flex flex-col items-center justify-center gap-2">
+                  <div className="flex flex-col items-center justify-center gap-2.5">
                     <FileSpreadsheet className="w-8 h-8 text-zinc-300 dark:text-zinc-700" />
                     <p className="font-medium text-zinc-600 dark:text-zinc-300">
                       No matching records found
@@ -255,6 +261,20 @@ export function TransactionTable({
                     <p className="text-[11px] text-zinc-400">
                       Adjust your active filters or record a new transaction.
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSearchChange("");
+                        onTypeChange("");
+                        onCategoryChange("");
+                        onToggleArchived(false);
+                        onPageChange(1);
+                      }}
+                      className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer shadow-sm"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Clear Active Filters
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -282,20 +302,25 @@ export function TransactionTable({
                       {tx.category?.name || "Uncategorized"}
                     </span>
                   </td>
-                  <td className="py-3.5 px-3 text-right font-bold whitespace-nowrap">
+                  <td className="py-3.5 px-3 text-right whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-0.5 ${
+                      className={`inline-flex items-center gap-1 font-mono tracking-tight font-semibold ${
                         tx.type === "INCOME"
                           ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-zinc-900 dark:text-zinc-100"
+                          : "text-rose-600/90 dark:text-rose-400/90"
                       }`}
                     >
                       {tx.type === "INCOME" ? (
-                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        <>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                          +{formatCurrency(tx.amount)}
+                        </>
                       ) : (
-                        <ArrowDownRight className="w-3.5 h-3.5 text-zinc-400" />
+                        <>
+                          <ArrowDownRight className="w-3.5 h-3.5 opacity-80" />
+                          -{formatCurrency(tx.amount)}
+                        </>
                       )}
-                      {formatCurrency(tx.amount)}
                     </span>
                   </td>
                   <td className="py-3.5 px-3 text-right whitespace-nowrap">
@@ -304,7 +329,7 @@ export function TransactionTable({
                         type="button"
                         disabled={actingId === tx.id}
                         onClick={() => handleAction(tx.id, "restore")}
-                        className="p-1.5 text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                        className="p-1.5 text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-emerald-500/10 active:scale-90 hover:scale-105 transition-all cursor-pointer"
                         title="Restore to active ledger"
                       >
                         <RotateCcw className="w-4 h-4" />
@@ -314,7 +339,7 @@ export function TransactionTable({
                         type="button"
                         disabled={actingId === tx.id}
                         onClick={() => handleAction(tx.id, "archive")}
-                        className="p-1.5 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        className="p-1.5 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 active:scale-90 hover:scale-105 transition-all cursor-pointer"
                         title="Soft-archive transaction"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -339,7 +364,7 @@ export function TransactionTable({
               type="button"
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
-              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all duration-150 cursor-pointer"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -348,7 +373,7 @@ export function TransactionTable({
               type="button"
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
-              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all duration-150 cursor-pointer"
               aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4" />

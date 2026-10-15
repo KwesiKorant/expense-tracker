@@ -154,7 +154,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm shadow-md shadow-emerald-600/25 disabled:opacity-50 transition-colors cursor-pointer"
+              className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm shadow-md shadow-emerald-600/25 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
             >
               {isLoading ? (
                 <>

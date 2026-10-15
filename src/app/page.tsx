@@ -68,7 +68,7 @@ export default function DashboardPage() {
   });
 
   // 5. Fetch Ledger Transactions
-  const { data: transactionsData, isFetching: isLedgerLoading } = useQuery({
+  const { data: transactionsData, isPending: isLedgerLoading } = useQuery({
     queryKey: ["transactions", { page, search, selectedType, selectedCategory, showArchived }],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -84,7 +84,6 @@ export default function DashboardPage() {
       const data = await res.json();
       return data.data;
     },
-    placeholderData: (prev) => prev, // Smooth pagination without layout jitter
   });
 
   // Logout handler
@@ -177,7 +176,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-950/50 shadow-sm transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-950/50 active:scale-90 shadow-sm transition-all duration-150 cursor-pointer"
               title="Sign Out"
               aria-label="Sign Out"
             >
