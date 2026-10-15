@@ -159,7 +159,10 @@ export function handleApiError(
   }
 
   // 3. Syntax errors (e.g. malformed JSON request body)
-  if (err instanceof SyntaxError && "body" in err) {
+  if (
+    err instanceof SyntaxError ||
+    (err instanceof Error && (err.name === "SyntaxError" || err.message.toLowerCase().includes("json")))
+  ) {
     return errorResponse("MALFORMED_JSON", "Invalid JSON payload provided.", 400, undefined, options);
   }
 
