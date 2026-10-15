@@ -39,14 +39,14 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={toggleTheme}
-      className={`relative inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 shadow-sm transition-all duration-150 cursor-pointer ${className}`}
+      className={`relative inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-all duration-150 cursor-pointer ${className}`}
       title={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-label="Toggle visual theme"
     >
       {isDark ? (
-        <Moon className="w-4 h-4 text-indigo-400 transition-transform duration-200" />
+        <Moon className="w-4 h-4 text-zinc-100 transition-transform duration-200" />
       ) : (
-        <Sun className="w-4 h-4 text-amber-500 transition-transform duration-200" />
+        <Sun className="w-4 h-4 text-zinc-900 transition-transform duration-200" />
       )}
     </button>
   );

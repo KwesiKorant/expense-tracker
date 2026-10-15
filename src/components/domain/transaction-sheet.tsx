@@ -120,7 +120,7 @@ export function TransactionSheet({
             animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
             exit={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="relative z-10 w-full sm:max-w-lg bg-white dark:bg-[#121215] rounded-t-3xl sm:rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-2xl p-6 overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="relative z-10 w-full sm:max-w-lg bg-white dark:bg-[#121215] rounded-t-3xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 overflow-hidden max-h-[90vh] overflow-y-auto"
           >
             {/* Mobile Drag Handle */}
             {isMobile && (
@@ -145,7 +145,7 @@ export function TransactionSheet({
             </div>
 
             {errorMsg && (
-              <div className="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-medium">
+              <div className="mt-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium">
                 {errorMsg}
               </div>
             )}
@@ -158,7 +158,7 @@ export function TransactionSheet({
                   onClick={() => setType("EXPENSE")}
                   className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer ${
                     type === "EXPENSE"
-                      ? "bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-sm"
+                      ? "bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950"
                       : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
                   }`}
                 >
@@ -170,7 +170,7 @@ export function TransactionSheet({
                   onClick={() => setType("INCOME")}
                   className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer ${
                     type === "INCOME"
-                      ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm"
+                      ? "bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950"
                       : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
                   }`}
                 >
@@ -196,7 +196,7 @@ export function TransactionSheet({
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
                     required
-                    className="w-full h-11 pl-8 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold text-base focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
+                    className="w-full h-11 pl-8 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold text-base focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10"
                   />
                 </div>
               </div>
@@ -209,7 +209,7 @@ export function TransactionSheet({
                 <select
                   value={activeCategoryId}
                   onChange={(e) => setSelectedCategoryId(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-indigo-500 focus:outline-none"
+                  className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
                 >
                   {filteredCategories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -229,7 +229,7 @@ export function TransactionSheet({
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
-                  className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-indigo-500 focus:outline-none"
+                  className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
                 />
               </div>
 
@@ -245,7 +245,7 @@ export function TransactionSheet({
                   placeholder="e.g. Weekly supermarket shopping"
                   maxLength={255}
                   required
-                  className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 focus:border-indigo-500 focus:outline-none"
+                  className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export function TransactionSheet({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-md shadow-indigo-600/20 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
+                className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>

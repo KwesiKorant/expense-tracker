@@ -56,8 +56,8 @@ export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartPr
                   dataKey="amount"
                   strokeWidth={0}
                 >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color || "#6366f1"} />
+                  {data.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={`var(--mono-${(index % 5) + 1})`} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -65,11 +65,11 @@ export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartPr
                     if (!active || !payload || !payload.length) return null;
                     const item = payload[0].payload as CategoryDistributionItem;
                     return (
-                      <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl text-xs space-y-1">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs space-y-1">
                         <div className="flex items-center gap-1.5 font-semibold text-zinc-900 dark:text-zinc-100">
                           <span
                             className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: item.color }}
+                            style={{ backgroundColor: `var(--mono-${(data.findIndex((d) => d.category === item.category) % 5) + 1})` }}
                           />
                           {item.category}
                         </div>
@@ -97,42 +97,45 @@ export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartPr
 
           {/* Full-Width Legend List with Progress Meters */}
           <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1">
-            {data.map((item) => (
-              <div
-                key={item.category}
-                className="group p-2 rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/50 transition-colors"
-              >
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: item.color }}
+            {data.map((item, index) => {
+              const shade = `var(--mono-${(index % 5) + 1})`;
+              return (
+                <div
+                  key={item.category}
+                  className="group p-2 rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/50 transition-colors"
+                >
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: shade }}
+                      />
+                      <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                        {item.category}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        ${item.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      </span>
+                      <span className="text-[11px] text-zinc-400 font-mono w-11 text-right">
+                        {item.percentage}%
+                      </span>
+                    </div>
+                  </div>
+                  {/* Thin Subtly Animated Progress Track */}
+                  <div className="w-full h-1 bg-zinc-200/60 dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${item.percentage}%`,
+                        backgroundColor: shade,
+                      }}
                     />
-                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
-                      {item.category}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                      ${item.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                    </span>
-                    <span className="text-[11px] text-zinc-400 font-mono w-11 text-right">
-                      {item.percentage}%
-                    </span>
                   </div>
                 </div>
-                {/* Thin Subtly Animated Progress Track */}
-                <div className="w-full h-1 bg-zinc-200/60 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${item.percentage}%`,
-                      backgroundColor: item.color,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -49,7 +49,7 @@ function LoginForm() {
   };
 
   return (
-    <EdgeCornerFrame glowColor="indigo" className="p-8">
+    <EdgeCornerFrame className="p-8">
       <div className="text-center mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           Sign In to Your Ledger
@@ -60,7 +60,7 @@ function LoginForm() {
       </div>
 
       {errorMsg && (
-        <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-medium">
+        <div className="mb-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium">
           {errorMsg}
         </div>
       )}
@@ -78,7 +78,7 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@arcfield.dev"
               required
-              className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
               required
-              className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10"
             />
           </div>
         </div>
@@ -103,7 +103,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm shadow-md shadow-indigo-600/25 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
+          className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
         >
           {isLoading ? (
             <>
@@ -125,7 +125,7 @@ function LoginForm() {
         <button
           type="button"
           onClick={handleFillDemo}
-          className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline active:scale-95 transition-all cursor-pointer"
+          className="inline-flex items-center gap-1 font-semibold text-zinc-900 dark:text-zinc-100 hover:underline active:scale-95 transition-all cursor-pointer"
         >
           <ShieldCheck className="w-3.5 h-3.5" />
           Fill Demo Account
@@ -136,7 +136,7 @@ function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
-          className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+          className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline"
         >
           Create Account
         </Link>
@@ -151,7 +151,7 @@ export default function LoginPage() {
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 p-4 sm:p-6 flex items-center justify-between max-w-6xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-600/30">
+          <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200">
             ET
           </div>
           <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">

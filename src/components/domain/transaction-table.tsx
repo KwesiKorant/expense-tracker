@@ -134,7 +134,7 @@ export function TransactionTable({
           <a
             href="/api/v1/transactions/export"
             download="transactions-export.csv"
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-[0.98] text-xs font-medium shadow-sm transition-all duration-150"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-[0.98] text-xs font-medium transition-all duration-150"
           >
             <Download className="w-3.5 h-3.5" />
             Export CSV
@@ -144,7 +144,7 @@ export function TransactionTable({
           <button
             type="button"
             onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow-md shadow-indigo-600/20 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-[0.98] transition-all duration-150 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add Entry
@@ -162,7 +162,7 @@ export function TransactionTable({
               onClick={() => onTypeChange("")}
               className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
                 selectedType === ""
-                  ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm"
+                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
@@ -173,7 +173,7 @@ export function TransactionTable({
               onClick={() => onTypeChange("EXPENSE")}
               className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
                 selectedType === "EXPENSE"
-                  ? "bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-sm"
+                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
@@ -184,7 +184,7 @@ export function TransactionTable({
               onClick={() => onTypeChange("INCOME")}
               className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
                 selectedType === "INCOME"
-                  ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm"
+                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
@@ -212,7 +212,7 @@ export function TransactionTable({
             onClick={() => onToggleArchived(!showArchived)}
             className={`h-9 px-3 rounded-xl border text-xs font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
               showArchived
-                ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400 font-semibold"
+                ? "bg-zinc-900 dark:bg-zinc-100 border-zinc-900 dark:border-zinc-100 text-white dark:text-zinc-900 font-semibold"
                 : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
             }`}
           >
@@ -245,7 +245,7 @@ export function TransactionTable({
               <tr>
                 <td colSpan={5} className="py-12 text-center text-zinc-400">
                   <div className="flex items-center justify-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-zinc-950 dark:bg-zinc-50 animate-ping" />
                     Updating ledger stream...
                   </div>
                 </td>
@@ -270,7 +270,7 @@ export function TransactionTable({
                         onToggleArchived(false);
                         onPageChange(1);
                       }}
-                      className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer shadow-sm"
+                      className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       Clear Active Filters
@@ -291,33 +291,27 @@ export function TransactionTable({
                     {tx.description}
                   </td>
                   <td className="py-3.5 px-3 whitespace-nowrap">
-                    <span
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
-                      style={{
-                        backgroundColor: `${tx.category?.color || "#6366f1"}15`,
-                        color: tx.category?.color || "#6366f1",
-                      }}
-                    >
-                      <Tag className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200/60 dark:border-zinc-700/60">
+                      <Tag className="w-3 h-3 text-zinc-400" />
                       {tx.category?.name || "Uncategorized"}
                     </span>
                   </td>
                   <td className="py-3.5 px-3 text-right whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1 font-mono tracking-tight font-semibold ${
+                      className={`inline-flex items-center gap-1 font-mono tracking-tight ${
                         tx.type === "INCOME"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-rose-600/90 dark:text-rose-400/90"
+                          ? "text-zinc-950 dark:text-zinc-50 font-bold"
+                          : "text-zinc-500 dark:text-zinc-400 font-medium"
                       }`}
                     >
                       {tx.type === "INCOME" ? (
                         <>
-                          <ArrowUpRight className="w-3.5 h-3.5" />
+                          <ArrowUpRight className="w-3.5 h-3.5 text-zinc-950 dark:text-zinc-50" />
                           +{formatCurrency(tx.amount)}
                         </>
                       ) : (
                         <>
-                          <ArrowDownRight className="w-3.5 h-3.5 opacity-80" />
+                          <ArrowDownRight className="w-3.5 h-3.5 text-zinc-400" />
                           -{formatCurrency(tx.amount)}
                         </>
                       )}
@@ -329,7 +323,7 @@ export function TransactionTable({
                         type="button"
                         disabled={actingId === tx.id}
                         onClick={() => handleAction(tx.id, "restore")}
-                        className="p-1.5 text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-emerald-500/10 active:scale-90 hover:scale-105 transition-all cursor-pointer"
+                        className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
                         title="Restore to active ledger"
                       >
                         <RotateCcw className="w-4 h-4" />
@@ -339,7 +333,7 @@ export function TransactionTable({
                         type="button"
                         disabled={actingId === tx.id}
                         onClick={() => handleAction(tx.id, "archive")}
-                        className="p-1.5 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 active:scale-90 hover:scale-105 transition-all cursor-pointer"
+                        className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
                         title="Soft-archive transaction"
                       >
                         <Trash2 className="w-4 h-4" />

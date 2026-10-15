@@ -71,7 +71,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
                 content={({ active, payload, label }) => {
                   if (!active || !payload || !payload.length) return null;
                   return (
-                    <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl text-xs space-y-1">
+                    <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs space-y-1">
                       <p className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{label}</p>
                       {payload.map((item) => (
                         <div key={item.name} className="flex items-center justify-between gap-4">
@@ -103,14 +103,14 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
               <Bar
                 name="Income"
                 dataKey="income"
-                fill="#10b981"
+                fill="var(--chart-income)"
                 radius={[6, 6, 0, 0]}
                 maxBarSize={32}
               />
               <Bar
                 name="Expenses"
                 dataKey="expenses"
-                fill="#f43f5e"
+                fill="var(--chart-expenses)"
                 radius={[6, 6, 0, 0]}
                 maxBarSize={32}
               />

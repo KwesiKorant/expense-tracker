@@ -31,12 +31,12 @@ export function KpiStrip({
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {/* 1. Total Income */}
-      <EdgeCornerFrame glowColor="emerald" interactive className="p-3.5 sm:p-5">
+      <EdgeCornerFrame interactive className="p-3.5 sm:p-5">
         <div className="flex items-center justify-between mb-2 sm:mb-3">
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Total Income
           </span>
-          <div className="p-1.5 sm:p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+          <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60">
             <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
@@ -49,12 +49,12 @@ export function KpiStrip({
       </EdgeCornerFrame>
 
       {/* 2. Total Expenses */}
-      <EdgeCornerFrame glowColor="rose" interactive className="p-3.5 sm:p-5">
+      <EdgeCornerFrame interactive className="p-3.5 sm:p-5">
         <div className="flex items-center justify-between mb-2 sm:mb-3">
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Total Expenses
           </span>
-          <div className="p-1.5 sm:p-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+          <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60">
             <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
@@ -67,22 +67,12 @@ export function KpiStrip({
       </EdgeCornerFrame>
 
       {/* 3. Net Balance */}
-      <EdgeCornerFrame
-        glowColor={netBalance >= 0 ? "indigo" : "amber"}
-        interactive
-        className="p-3.5 sm:p-5"
-      >
+      <EdgeCornerFrame interactive className="p-3.5 sm:p-5">
         <div className="flex items-center justify-between mb-2 sm:mb-3">
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Net Cash Flow
           </span>
-          <div
-            className={`p-1.5 sm:p-2 rounded-xl ${
-              netBalance >= 0
-                ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-                : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-            }`}
-          >
+          <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60">
             <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
@@ -95,12 +85,12 @@ export function KpiStrip({
       </EdgeCornerFrame>
 
       {/* 4. Savings Rate */}
-      <EdgeCornerFrame glowColor="amber" interactive className="p-3.5 sm:p-5">
+      <EdgeCornerFrame interactive className="p-3.5 sm:p-5">
         <div className="flex items-center justify-between mb-2 sm:mb-3">
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             Savings Rate
           </span>
-          <div className="p-1.5 sm:p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+          <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60">
             <PiggyBank className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>

@@ -65,7 +65,7 @@ export function ExpandingSearchDock({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="flex items-center w-64 sm:w-80 h-10 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm"
+            className="flex items-center w-64 sm:w-80 h-10 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
           >
             <Search className="w-4 h-4 text-zinc-400 shrink-0 mr-2" />
             <input
@@ -100,7 +100,7 @@ export function ExpandingSearchDock({
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
             type="button"
             onClick={handleOpen}
-            className="flex items-center gap-2 h-10 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 shadow-sm transition-all duration-150 cursor-pointer"
+            className="flex items-center gap-2 h-10 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95 transition-all duration-150 cursor-pointer"
             aria-label="Search transactions"
           >
             <Search className="w-4 h-4" />

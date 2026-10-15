@@ -12,6 +12,13 @@
   --ring: #18181b;
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
+  --chart-income: #18181b;
+  --chart-expenses: #a1a1aa;
+  --mono-1: #18181b;
+  --mono-2: #3f3f46;
+  --mono-3: #71717a;
+  --mono-4: #a1a1aa;
+  --mono-5: #d4d4d8;
 }
 
 .dark {
@@ -24,6 +31,13 @@
   --ring: #d4d4d8;
   --muted: #18181b;
   --muted-foreground: #a1a1aa;
+  --chart-income: #fafafa;
+  --chart-expenses: #52525b;
+  --mono-1: #ffffff;
+  --mono-2: #d4d4d8;
+  --mono-3: #a1a1aa;
+  --mono-4: #71717a;
+  --mono-5: #52525b;
 }
 
 body {
