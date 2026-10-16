@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { ArrowRight, ArrowDownRight, ArrowUpRight, Plus, FileSpreadsheet } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import type { TransactionItem } from "@/components/domain/transaction-table";
@@ -54,7 +55,7 @@ export function RecentTransactions({
         </div>
         <Link
           href="/ledger"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors group"
+          className="btn-tactile inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors group cursor-pointer"
         >
           <span>View Full Ledger</span>
           <ArrowRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
@@ -80,7 +81,7 @@ export function RecentTransactions({
               <button
                 type="button"
                 onClick={onOpenAddModal}
-                className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 transition-all duration-150 cursor-pointer"
+                className="btn-tactile mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Record First Entry
@@ -88,9 +89,17 @@ export function RecentTransactions({
             </div>
           </div>
         ) : (
-          displayItems.map((tx) => (
-            <div
+          displayItems.map((tx, index) => (
+            <motion.div
               key={tx.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 28,
+                delay: index * 0.035,
+              }}
               className="py-3 flex items-center justify-between gap-4 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 -mx-2 px-2 rounded-lg transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -137,7 +146,7 @@ export function RecentTransactions({
                   {formatCurrency(tx.amount)}
                 </span>
               </div>
-            </div>
+            </motion.div>
           ))
         )}
       </div>

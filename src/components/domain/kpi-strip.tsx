@@ -3,6 +3,7 @@
 import React from "react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
 
 interface KpiStripProps {
@@ -22,14 +23,6 @@ export function KpiStrip({
   activeMonth,
   isLoading = false,
 }: KpiStripProps) {
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
-
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {/* 1. Total Income */}
@@ -46,7 +39,9 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={50}>{formatCurrency(totalIncome)}</TextReveal>
+            <TextReveal delayMs={40}>
+              <AnimatedCounter value={totalIncome} formatAsCurrency={true} />
+            </TextReveal>
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
@@ -68,7 +63,9 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={100}>{formatCurrency(totalExpenses)}</TextReveal>
+            <TextReveal delayMs={80}>
+              <AnimatedCounter value={totalExpenses} formatAsCurrency={true} />
+            </TextReveal>
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
@@ -90,7 +87,9 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={150}>{formatCurrency(netBalance)}</TextReveal>
+            <TextReveal delayMs={120}>
+              <AnimatedCounter value={netBalance} formatAsCurrency={true} />
+            </TextReveal>
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
@@ -112,12 +111,19 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-20 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={200}>
-              {Number.isFinite(savingsRate) ? `${savingsRate.toFixed(1)}%` : "0.0%"}
+            <TextReveal delayMs={160}>
+              <AnimatedCounter
+                value={Number.isFinite(savingsRate) ? savingsRate : 0}
+                formatAsCurrency={false}
+                suffix="%"
+                decimals={1}
+              />
             </TextReveal>
           )}
         </div>
-        <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">Of monthly earnings saved</p>
+        <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
+          Of monthly earnings saved
+        </p>
       </EdgeCornerFrame>
     </div>
   );
