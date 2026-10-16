@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { useMotionValue, useTransform, type PanInfo } from "motion/react";
+import { useMotionValue, useTransform, useDragControls, type PanInfo } from "motion/react";
 
 function subscribeMediaQuery(callback: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -23,6 +23,7 @@ function getIsMobileServerSnapshot(): boolean {
  * useMobileSheetDrag Hook — Arc-AA Compositor Standard
  * Provides touch drag-to-dismiss mechanics on mobile viewports (< 640px)
  * while gracefully preserving centered dialog mechanics on desktop (>= 640px).
+ * Restricts drag-to-dismiss to the dedicated grab handle & header area via dragControls.
  */
 export function useMobileSheetDrag(onDismiss: () => void) {
   const isMobile = useSyncExternalStore(
@@ -31,6 +32,7 @@ export function useMobileSheetDrag(onDismiss: () => void) {
     getIsMobileServerSnapshot
   );
 
+  const dragControls = useDragControls();
   const y = useMotionValue(0);
   const backdropOpacity = useTransform(y, [0, 240], [0.65, 0]);
 
@@ -49,6 +51,8 @@ export function useMobileSheetDrag(onDismiss: () => void) {
   const dragProps = isMobile
     ? {
         drag: "y" as const,
+        dragListener: false,
+        dragControls: dragControls,
         dragConstraints: { top: 0, bottom: 0 },
         dragElastic: { top: 0.05, bottom: 0.75 },
         onDragEnd: handleDragEnd,
@@ -61,5 +65,6 @@ export function useMobileSheetDrag(onDismiss: () => void) {
     y,
     backdropOpacity,
     dragProps,
+    dragControls,
   };
 }

@@ -490,7 +490,7 @@ export function TransactionSheet({
   transactionToEdit,
   onCategoryCreated,
 }: TransactionSheetProps) {
-  const { isMobile, backdropOpacity, dragProps } = useMobileSheetDrag(onClose);
+  const { isMobile, backdropOpacity, dragProps, dragControls } = useMobileSheetDrag(onClose);
 
   return (
     <AnimatePresence>
@@ -517,8 +517,12 @@ export function TransactionSheet({
           >
             {/* Mobile Drag Handle */}
             {isMobile && (
-              <div className="flex justify-center -mt-2 mb-4">
-                <div className="w-12 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <div
+                onPointerDown={(e) => dragControls.start(e)}
+                className="flex flex-col items-center justify-center -mt-3 mb-3 py-2 cursor-grab active:cursor-grabbing touch-none select-none group"
+                aria-label="Drag down to close sheet"
+              >
+                <div className="w-12 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700 group-hover:bg-zinc-400 dark:group-hover:bg-zinc-500 transition-colors" />
               </div>
             )}
 
