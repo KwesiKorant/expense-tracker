@@ -48,6 +48,42 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Spring Easing & Motion Tokens — Emil Kowalski & Arc-AA Compositor Standard */
+:root {
+  --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Universal Button Tactility (Compositor-Only Scale) */
+.btn-tactile {
+  transition: transform 150ms var(--ease-snappy), opacity 150ms var(--ease-snappy);
+}
+.btn-tactile:active {
+  transform: scale(0.97);
+}
+
+/* Interactive Card Desktop Float */
+@media (hover: hover) and (pointer: fine) {
+  .interactive-card {
+    transition: transform 180ms var(--ease-snappy), border-color 180ms ease;
+  }
+  .interactive-card:hover {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+/* Form Validation Elastic Shake */
+@keyframes shakeError {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  20%, 60% { transform: translate3d(-4px, 0, 0); }
+  40%, 80% { transform: translate3d(4px, 0, 0); }
+}
+
+.animate-shake {
+  animation: shakeError 250ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
 /* Compositor-only text reveal pipeline */
 @keyframes textRevealUp {
   0% {
@@ -61,7 +97,7 @@ body {
 }
 
 .text-reveal-item {
-  animation: textRevealUp var(--reveal-duration, 380ms) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms) both;
+  animation: textRevealUp var(--reveal-duration, 380ms) var(--ease-snappy) var(--reveal-delay, 0ms) both;
 }
 
 /* GPU Boundary Isolation for complex animated widgets and charts */
@@ -85,7 +121,8 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .text-reveal-item {
+  .text-reveal-item,
+  .animate-shake {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

@@ -36,7 +36,7 @@ export function TextReveal({
   return (
     <Component
       style={style}
-      className={`text-reveal-item inline-block will-change-[transform,opacity] ${className}`}
+      className={`text-reveal-item inline-block ${className}`}
     >
       {children}
     </Component>

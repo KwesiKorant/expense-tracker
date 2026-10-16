@@ -22,7 +22,7 @@ export function EdgeCornerFrame({
     <div
       className={`relative rounded-2xl bg-white dark:bg-[#111114] border border-zinc-200 dark:border-zinc-800/90 transition-colors duration-150 ${
         interactive
-          ? "hover:border-zinc-400 dark:hover:border-zinc-600"
+          ? "interactive-card hover:border-zinc-400 dark:hover:border-zinc-600"
           : ""
       } ${className}`}
     >
