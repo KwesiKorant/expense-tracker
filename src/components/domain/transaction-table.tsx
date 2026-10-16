@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Download,
   Plus,
@@ -14,6 +15,9 @@ import {
   FileSpreadsheet,
   Archive,
   Receipt,
+  AlertTriangle,
+  X,
+  Loader2,
 } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
@@ -55,6 +59,7 @@ interface TransactionTableProps {
   onOpenAddModal: () => void;
   onArchive: (id: string) => Promise<void>;
   onRestore: (id: string) => Promise<void>;
+  onPermanentDelete?: (id: string) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -76,10 +81,30 @@ export function TransactionTable({
   onOpenAddModal,
   onArchive,
   onRestore,
+  onPermanentDelete,
   isLoading = false,
 }: TransactionTableProps) {
   const [actingId, setActingId] = useState<string | null>(null);
+  const [purgeCandidate, setPurgeCandidate] = useState<TransactionItem | null>(null);
+  const [isPurging, setIsPurging] = useState(false);
   const toast = useToast();
+
+  const handleConfirmPurge = async () => {
+    if (!purgeCandidate || !onPermanentDelete) return;
+    setIsPurging(true);
+    try {
+      await onPermanentDelete(purgeCandidate.id);
+      toast.success(
+        "Transaction permanently purged",
+        `"${purgeCandidate.description}" was completely removed from the database.`
+      );
+      setPurgeCandidate(null);
+    } catch {
+      toast.error("Purge failed", "Could not permanently delete transaction.");
+    } finally {
+      setIsPurging(false);
+    }
+  };
 
   const handleAction = async (id: string, action: "archive" | "restore", txDescription?: string) => {
     setActingId(id);
@@ -400,15 +425,28 @@ export function TransactionTable({
                   </td>
                   <td className="py-3.5 px-3 text-right whitespace-nowrap">
                     {tx.isArchived ? (
-                      <button
-                        type="button"
-                        disabled={actingId === tx.id}
-                        onClick={() => handleAction(tx.id, "restore")}
-                        className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
-                        title="Restore to active ledger"
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          disabled={actingId === tx.id}
+                          onClick={() => handleAction(tx.id, "restore")}
+                          className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all cursor-pointer"
+                          title="Restore to active ledger"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                        </button>
+                        {onPermanentDelete && (
+                          <button
+                            type="button"
+                            disabled={actingId === tx.id}
+                            onClick={() => setPurgeCandidate(tx)}
+                            className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all cursor-pointer"
+                            title="Delete forever (permanent purge)"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <button
                         type="button"
@@ -456,6 +494,98 @@ export function TransactionTable({
           </div>
         </div>
       )}
+
+      {/* Permanent Purge Confirmation Modal */}
+      <AnimatePresence>
+        {purgeCandidate && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isPurging && setPurgeCandidate(null)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            {/* Dialog Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 8 }}
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              className="relative z-10 w-full max-w-md bg-white dark:bg-[#121215] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 overflow-hidden shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="purge-modal-title"
+            >
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-900 dark:text-zinc-100">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPurgeCandidate(null)}
+                  disabled={isPurging}
+                  className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg cursor-pointer"
+                  aria-label="Cancel"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <h3 id="purge-modal-title" className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-4">
+                Permanently delete transaction?
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">
+                This entry and its audit records will be irreversibly expunged from your database. This action cannot be undone.
+              </p>
+
+              {/* Transaction Summary Card */}
+              <div className="mt-4 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-xs flex items-center justify-between">
+                <div className="pr-3 truncate">
+                  <p className="font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                    {purgeCandidate.description}
+                  </p>
+                  <p className="text-zinc-400 text-[11px] mt-0.5">
+                    {formatDate(purgeCandidate.date)} · {purgeCandidate.category?.name || "Uncategorized"}
+                  </p>
+                </div>
+                <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
+                  {purgeCandidate.type === "INCOME" ? "+" : "-"}{formatCurrency(purgeCandidate.amount)}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setPurgeCandidate(null)}
+                  disabled={isPurging}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmPurge}
+                  disabled={isPurging}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  {isPurging ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Purging...
+                    </>
+                  ) : (
+                    "Delete Forever"
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </EdgeCornerFrame>
   );
 }

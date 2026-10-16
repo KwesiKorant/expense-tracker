@@ -355,6 +355,35 @@ async function runSuite() {
       const listBody2 = await listRes2.json();
       const restoredFound = listBody2.data.transactions.some((t) => t.id === userATxId);
       assert(restoredFound, "Restored transaction visible in active list");
+
+      // 5. Permanent Purge Lifecycle
+      const tempTxRes = await fetch(`${BASE_URL}/api/v1/transactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Cookie: userACookie, "X-Forwarded-For": ip },
+        body: JSON.stringify({
+          type: "EXPENSE",
+          amount: 19.99,
+          categoryId: systemCategoryId,
+          date: "2026-10-15",
+          description: "Temporary Purge Candidate",
+        }),
+      });
+      assert(tempTxRes.status === 201, "Created temporary transaction for purge");
+      const tempTxBody = await tempTxRes.json();
+      const purgeId = tempTxBody.data.id;
+
+      const purgeRes = await fetch(`${BASE_URL}/api/v1/transactions/${purgeId}?permanent=true`, {
+        method: "DELETE",
+        headers: { Cookie: userACookie, "X-Forwarded-For": ip },
+      });
+      assert(purgeRes.status === 200, "Purge returns 200 OK");
+      const purgeBody = await purgeRes.json();
+      assert(purgeBody.data.deletedPermanently === true, "deletedPermanently flag is true");
+
+      const verifyPurgedRes = await fetch(`${BASE_URL}/api/v1/transactions/${purgeId}`, {
+        headers: { Cookie: userACookie, "X-Forwarded-For": ip },
+      });
+      assert(verifyPurgedRes.status === 404, "Permanently purged record returns 404 Not Found");
     });
 
     // AC-7: Sliding-Window Rate Limiting Enforcement

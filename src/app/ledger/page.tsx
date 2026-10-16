@@ -109,6 +109,19 @@ export default function LedgerPage() {
     }
   };
 
+  // Permanent purge handler
+  const handlePermanentDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/v1/transactions/${id}?permanent=true`, { method: "DELETE" });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      }
+    } catch (err) {
+      console.error("Permanent delete failed:", err);
+    }
+  };
+
   const transactions: TransactionItem[] = transactionsData?.transactions || [];
   const pagination = transactionsData?.pagination || { total: 0, totalPages: 1 };
 
@@ -179,6 +192,7 @@ export default function LedgerPage() {
           onOpenAddModal={() => setIsAddModalOpen(true)}
           onArchive={handleArchive}
           onRestore={handleRestore}
+          onPermanentDelete={handlePermanentDelete}
           isLoading={isLedgerLoading}
         />
       </main>

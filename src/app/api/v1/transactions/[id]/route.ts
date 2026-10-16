@@ -231,6 +231,24 @@ export async function DELETE(req: NextRequest, { params }: RouteProps) {
       return errorResponse("NOT_FOUND", "Transaction record not found.", 404, undefined, { rateLimit });
     }
 
+    const { searchParams } = new URL(req.url);
+    const isPermanent = searchParams.get("permanent") === "true";
+
+    if (isPermanent) {
+      await prisma.transaction.delete({
+        where: { id: existing.id },
+      });
+
+      return successResponse(
+        {
+          id: existing.id,
+          deletedPermanently: true,
+        },
+        "Transaction permanently deleted.",
+        { rateLimit }
+      );
+    }
+
     // Atomic soft-archival lifecycle and ARCHIVE audit log
     const archived = await prisma.$transaction(async (tx) => {
       const now = new Date();
