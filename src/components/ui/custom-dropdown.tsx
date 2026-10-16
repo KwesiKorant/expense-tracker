@@ -100,7 +100,7 @@ export function CustomDropdown({
   return (
     <div
       ref={containerRef}
-      className={`relative inline-block ${className}`}
+      className={`relative inline-block ${isOpen ? "z-30" : "z-10"} ${className}`}
       onKeyDown={handleKeyDown}
     >
       {/* Trigger Button */}

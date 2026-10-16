@@ -232,8 +232,8 @@ export function TransactionTable({
       </div>
 
       {/* Filter Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 -mx-1 px-1 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden shrink-0">
+      <div className="relative z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Type Filter Pills with Kinematic Sliding Layout Pill */}
           <div className="relative flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs shrink-0">
             {[
@@ -423,7 +423,7 @@ export function TransactionTable({
                         {formatDate(tx.date)}
                       </td>
                       <td
-                        className="py-3.5 px-3 font-semibold text-zinc-900 dark:text-zinc-100 max-w-[200px] md:max-w-xs lg:max-w-md truncate cursor-pointer hover:underline underline-offset-2"
+                        className="py-3.5 px-3 font-semibold text-zinc-900 dark:text-zinc-100 max-w-[200px] md:max-w-xs lg:max-w-md truncate cursor-pointer"
                         title={tx.description}
                         onClick={() => onEdit?.(tx)}
                       >
@@ -550,7 +550,7 @@ export function TransactionTable({
                         title={tx.description}
                         onClick={() => onEdit?.(tx)}
                       >
-                        <p className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate hover:underline underline-offset-2">
+                        <p className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
                           {tx.description}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">
