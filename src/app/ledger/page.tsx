@@ -19,6 +19,17 @@ export default function LedgerPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showArchived, setShowArchived] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState<TransactionItem | null>(null);
+
+  const handleOpenAdd = () => {
+    setTransactionToEdit(null);
+    setIsAddModalOpen(true);
+  };
+
+  const handleOpenEdit = (tx: TransactionItem) => {
+    setTransactionToEdit(tx);
+    setIsAddModalOpen(true);
+  };
 
   // 1. Fetch authenticated user profile
   const { data: userProfile, isError: authError } = useQuery({
@@ -134,7 +145,7 @@ export default function LedgerPage() {
       {/* Shared Header Navigation */}
       <Header
         activeTab="ledger"
-        onOpenAddModal={() => setIsAddModalOpen(true)}
+        onOpenAddModal={handleOpenAdd}
         userProfile={userProfile}
         onLogout={handleLogout}
       />
@@ -189,7 +200,8 @@ export default function LedgerPage() {
             setShowArchived(val);
             setPage(1);
           }}
-          onOpenAddModal={() => setIsAddModalOpen(true)}
+          onOpenAddModal={handleOpenAdd}
+          onEdit={handleOpenEdit}
           onArchive={handleArchive}
           onRestore={handleRestore}
           onPermanentDelete={handlePermanentDelete}
@@ -197,15 +209,19 @@ export default function LedgerPage() {
         />
       </main>
 
-      {/* Quick-Add Transaction Sheet Modal */}
+      {/* Quick-Add / Edit Transaction Sheet Modal */}
       <TransactionSheet
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setTransactionToEdit(null);
+        }}
         onSuccess={() => {
           queryClient.invalidateQueries({ queryKey: ["transactions"] });
           queryClient.invalidateQueries({ queryKey: ["analytics"] });
         }}
         categories={categories}
+        transactionToEdit={transactionToEdit}
       />
     </div>
   );

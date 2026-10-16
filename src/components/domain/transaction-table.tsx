@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   X,
   Loader2,
+  Pencil,
 } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
@@ -60,6 +61,7 @@ interface TransactionTableProps {
   onArchive: (id: string) => Promise<void>;
   onRestore: (id: string) => Promise<void>;
   onPermanentDelete?: (id: string) => Promise<void>;
+  onEdit?: (tx: TransactionItem) => void;
   isLoading?: boolean;
 }
 
@@ -82,6 +84,7 @@ export function TransactionTable({
   onArchive,
   onRestore,
   onPermanentDelete,
+  onEdit,
   isLoading = false,
 }: TransactionTableProps) {
   const [actingId, setActingId] = useState<string | null>(null);
@@ -448,15 +451,28 @@ export function TransactionTable({
                         )}
                       </div>
                     ) : (
-                      <button
-                        type="button"
-                        disabled={actingId === tx.id}
-                        onClick={() => handleAction(tx.id, "archive", tx.description)}
-                        className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
-                        title="Soft-archive transaction"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        {onEdit && (
+                          <button
+                            type="button"
+                            disabled={actingId === tx.id}
+                            onClick={() => onEdit(tx)}
+                            className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all cursor-pointer"
+                            title="Edit transaction"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          disabled={actingId === tx.id}
+                          onClick={() => handleAction(tx.id, "archive", tx.description)}
+                          className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
+                          title="Soft-archive transaction"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
