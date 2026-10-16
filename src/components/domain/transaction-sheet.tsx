@@ -74,22 +74,45 @@ function TransactionSheetForm({
   const [newCatError, setNewCatError] = useState("");
   const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
 
-  const handleAmountChange = (val: string) => {
-    setAmount(val);
-    if (!val) {
-      setAmountError("");
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Block exponent, plus, and minus signs
+    if (["e", "E", "+", "-"].includes(e.key)) {
+      e.preventDefault();
       return;
     }
-    const num = parseFloat(val);
-    if (isNaN(num)) {
-      setAmountError("Please enter a numeric amount.");
-    } else if (num <= 0) {
+    // Block duplicate decimal points
+    if (e.key === "." && amount.includes(".")) {
+      e.preventDefault();
+    }
+  };
+
+  const handleAmountChange = (rawVal: string) => {
+    // Strip any non-numeric or non-period characters
+    let cleanVal = rawVal.replace(/[^0-9.]/g, "");
+
+    // Enforce only one decimal separator
+    const parts = cleanVal.split(".");
+    if (parts.length > 2) {
+      cleanVal = `${parts[0]}.${parts.slice(1).join("")}`;
+    }
+
+    // Strictly clamp to maximum 2 decimal places at keystroke level
+    if (parts.length === 2 && parts[1].length > 2) {
+      cleanVal = `${parts[0]}.${parts[1].slice(0, 2)}`;
+    }
+
+    // Enforce hard ceiling ($999,999,999.99)
+    const num = parseFloat(cleanVal);
+    if (!isNaN(num) && num > 999999999.99) {
+      cleanVal = "999999999.99";
+      setAmountError("Maximum transaction limit is $999,999,999.99.");
+    } else if (!isNaN(num) && num <= 0) {
       setAmountError("Amount must be greater than $0.00.");
-    } else if (val.includes(".") && val.split(".")[1]?.length > 2) {
-      setAmountError("Maximum of two decimal places allowed.");
     } else {
       setAmountError("");
     }
+
+    setAmount(cleanVal);
   };
 
   const filteredCategories = localCategories.filter((c) => c.type === type);
@@ -142,8 +165,8 @@ function TransactionSheetForm({
       return;
     }
 
-    if (amount.includes(".") && amount.split(".")[1]?.length > 2) {
-      setAmountError("Maximum of two decimal places allowed.");
+    if (parsedAmount > 999999999.99) {
+      setAmountError("Amount cannot exceed $999,999,999.99.");
       return;
     }
 
@@ -262,10 +285,12 @@ function TransactionSheetForm({
               $
             </span>
             <input
-              type="number"
-              step="0.01"
-              min="0.01"
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              maxLength={14}
               value={amount}
+              onKeyDown={handleKeyDown}
               onChange={(e) => handleAmountChange(e.target.value)}
               placeholder="0.00"
               required
