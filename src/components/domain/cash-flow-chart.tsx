@@ -135,6 +135,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
                     fill="var(--chart-income)"
                     radius={[6, 6, 0, 0]}
                     maxBarSize={32}
+                    isAnimationActive={false}
                   />
                   <Bar
                     name="Expenses"
@@ -142,6 +143,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
                     fill="var(--chart-expenses)"
                     radius={[6, 6, 0, 0]}
                     maxBarSize={32}
+                    isAnimationActive={false}
                   />
                 </BarChart>
               </ResponsiveContainer>

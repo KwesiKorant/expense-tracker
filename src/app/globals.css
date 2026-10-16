@@ -40,6 +40,10 @@
   --mono-5: #52525b;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);

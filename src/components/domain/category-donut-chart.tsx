@@ -65,6 +65,7 @@ export function CategoryDonutChart({
                   paddingAngle={3}
                   dataKey="amount"
                   strokeWidth={0}
+                  isAnimationActive={false}
                 >
                   {data.map((_, index) => (
                     <Cell

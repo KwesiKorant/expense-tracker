@@ -90,6 +90,7 @@ export function Header({
             <Link
               href="/"
               prefetch={true}
+              scroll={false}
               onMouseEnter={prefetchOverview}
               onClick={() => setOptimisticTab("overview")}
               className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
@@ -111,6 +112,7 @@ export function Header({
             <Link
               href="/ledger"
               prefetch={true}
+              scroll={false}
               onMouseEnter={prefetchLedger}
               onClick={() => setOptimisticTab("ledger")}
               className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
