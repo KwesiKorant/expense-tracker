@@ -496,7 +496,7 @@ export function TransactionSheet({
             animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
             exit={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="relative z-10 w-full sm:max-w-lg bg-white dark:bg-[#121215] rounded-t-3xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] sm:pb-6 overflow-hidden max-h-[88dvh] overflow-y-auto"
+            className="relative z-10 w-full sm:max-w-lg bg-white dark:bg-[#121215] rounded-t-3xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] sm:pb-6 overflow-hidden max-h-[88dvh] overflow-y-auto overscroll-y-contain"
           >
             {/* Mobile Drag Handle */}
             {isMobile && (
