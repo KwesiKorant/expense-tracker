@@ -42,8 +42,16 @@ function subscribe(callback: () => void) {
 
 function getSnapshot(): BlurTier {
   const current = evaluateTier();
-  if (typeof document !== "undefined" && document.documentElement.dataset.blurTier !== current) {
-    document.documentElement.dataset.blurTier = current;
+  if (typeof document !== "undefined") {
+    if (current === "low") {
+      if (document.documentElement.dataset.blurTier !== "low") {
+        document.documentElement.dataset.blurTier = "low";
+      }
+    } else {
+      if (document.documentElement.dataset.blurTier === "low") {
+        delete document.documentElement.dataset.blurTier;
+      }
+    }
   }
   return current;
 }
