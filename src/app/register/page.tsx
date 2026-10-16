@@ -77,7 +77,7 @@ export default function RegisterPage() {
           </div>
 
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium">
+            <div className="mb-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium animate-shake">
               {errorMsg}
             </div>
           )}
@@ -163,7 +163,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
+              className="btn-tactile w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? (
                 <>

@@ -233,28 +233,35 @@ function TransactionSheetForm({
       </div>
 
       {errorMsg && (
-        <div className="mt-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium">
+        <div className="mt-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium animate-shake">
           {errorMsg}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-        {/* Type Switcher */}
-        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800">
+        {/* Type Switcher with Kinematic Sliding Layout Pill */}
+        <div className="relative grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800">
           <button
             type="button"
             onClick={() => {
               setType("EXPENSE");
               setSelectedCategoryId("");
             }}
-            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer ${
+            className={`btn-tactile relative flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors duration-150 cursor-pointer ${
               type === "EXPENSE"
-                ? "bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950"
+                ? "text-white dark:text-zinc-950"
                 : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
             }`}
           >
-            <ArrowDownRight className="w-4 h-4" />
-            Expense
+            {type === "EXPENSE" && (
+              <motion.div
+                layoutId="sheet-type-pill"
+                className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <ArrowDownRight className="relative z-10 w-4 h-4" />
+            <span className="relative z-10">Expense</span>
           </button>
           <button
             type="button"
@@ -262,14 +269,21 @@ function TransactionSheetForm({
               setType("INCOME");
               setSelectedCategoryId("");
             }}
-            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer ${
+            className={`btn-tactile relative flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors duration-150 cursor-pointer ${
               type === "INCOME"
-                ? "bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950"
+                ? "text-white dark:text-zinc-950"
                 : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
             }`}
           >
-            <ArrowUpRight className="w-4 h-4" />
-            Income
+            {type === "INCOME" && (
+              <motion.div
+                layoutId="sheet-type-pill"
+                className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <ArrowUpRight className="relative z-10 w-4 h-4" />
+            <span className="relative z-10">Income</span>
           </button>
         </div>
 
@@ -440,7 +454,7 @@ function TransactionSheetForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 active:scale-[0.98] disabled:opacity-50 transition-all duration-150 cursor-pointer"
+          className="btn-tactile w-full h-11 mt-2 flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? (
             <>
