@@ -103,17 +103,15 @@ export function RecentTransactions({
               </div>
             </motion.div>
           ) : (
-            displayItems.map((tx, idx) => (
+            displayItems.map((tx) => (
               <motion.div
                 key={tx.id}
-                layout
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98 }}
+                layout="position"
+                initial={false}
+                exit={{ opacity: 0 }}
                 transition={{
-                  layout: { type: "spring", stiffness: 380, damping: 32 },
-                  opacity: { duration: 0.16, delay: idx * 0.03 },
-                  y: { type: "spring", stiffness: 400, damping: 30, delay: idx * 0.03 },
+                  layout: { duration: 0.16, ease: [0.23, 1, 0.32, 1] },
+                  opacity: { duration: 0.12 },
                 }}
                 className="py-3 flex items-center justify-between gap-4 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 -mx-2 px-2 rounded-lg transition-colors group cursor-default"
               >
