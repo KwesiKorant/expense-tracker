@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -10,8 +10,10 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
+  Cell,
 } from "recharts";
 import { motion, AnimatePresence } from "motion/react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 
 interface CashFlowMonth {
@@ -25,12 +27,57 @@ interface CashFlowChartProps {
   isLoading?: boolean;
 }
 
+/**
+ * CashFlowChart Primitive — Arc-AA & Emil Kowalski Standard
+ * - Zero blue text selection: Pure select-none with tactile bar selection feedback.
+ * - Anti-clipping: Dedicated 54px Y-axis gutter and ample padding.
+ * - Fluid horizontal viewport with hidden scrollbars and directional edge arrows.
+ */
 export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const formatCurrency = (val: number) => `$${val.toLocaleString()}`;
 
+  // Evaluate horizontal scroll boundaries to toggle directional indicator arrows
+  const checkScrollability = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 6);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+  }, []);
+
+  useEffect(() => {
+    checkScrollability();
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkScrollability();
+    });
+    resizeObserver.observe(el);
+
+    return () => resizeObserver.disconnect();
+  }, [checkScrollability, data]);
+
+  const handleScroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const offset = direction === "left" ? -180 : 180;
+    scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
+  };
+
+  const selectedMonthData = data.find((d) => d.month === selectedMonth);
+  const selectedNet = selectedMonthData
+    ? selectedMonthData.income - selectedMonthData.expenses
+    : 0;
+
   return (
-    <EdgeCornerFrame className="p-5 h-full">
-      <div className="flex items-center justify-between mb-4">
+    <EdgeCornerFrame className="p-5 h-full select-none">
+      {/* Header and Active Selection Badge */}
+      <div className="flex items-center justify-between mb-4 gap-2">
         <div>
           <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             6-Month Cash Flow Overview
@@ -39,10 +86,69 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
             Monthly income vs expenditure trajectory
           </p>
         </div>
+
+        {/* Lightweight Tactile Selection Indicator */}
+        <AnimatePresence>
+          {selectedMonth && selectedMonthData && (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, scale: 0.9, y: 2 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 2 }}
+              onClick={() => setSelectedMonth(null)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 active:scale-95 transition-all cursor-pointer shrink-0"
+              title="Click to clear selection"
+            >
+              <span className="font-medium text-zinc-500 dark:text-zinc-400">
+                {selectedMonth}:
+              </span>
+              <span
+                className={selectedNet >= 0 ? "text-emerald-600 dark:text-emerald-400 font-mono" : "text-rose-600 dark:text-rose-400 font-mono"}
+              >
+                {selectedNet >= 0 ? "+" : "-"}${Math.abs(selectedNet).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              <X className="w-3 h-3 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 ml-0.5" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* GPU Boundary Containment wrapper per Arc-AA protocol */}
-      <div className="chart-containment w-full h-[230px] sm:h-[280px]">
+      {/* Chart Viewport Wrapper with Side Directional Indicators */}
+      <div className="relative w-full chart-containment">
+        {/* Left Side Scroll Indicator Arrow */}
+        <AnimatePresence>
+          {canScrollLeft && (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={() => handleScroll("left")}
+              aria-label="Scroll left to view previous months"
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 z-30 w-7 h-7 rounded-full bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-transform cursor-pointer backdrop-blur-sm"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        {/* Right Side Scroll Indicator Arrow */}
+        <AnimatePresence>
+          {canScrollRight && (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={() => handleScroll("right")}
+              aria-label="Scroll right to view more months"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 z-30 w-7 h-7 rounded-full bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-transform cursor-pointer backdrop-blur-sm"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           {isLoading ? (
             <motion.div
@@ -51,7 +157,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="flex items-center justify-center h-full text-xs text-zinc-400 animate-pulse"
+              className="flex items-center justify-center h-[240px] sm:h-[280px] text-xs text-zinc-400 animate-pulse"
             >
               Loading analytics trajectory...
             </motion.div>
@@ -62,92 +168,140 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="flex items-center justify-center h-full text-xs text-zinc-400"
+              className="flex items-center justify-center h-[240px] sm:h-[280px] text-xs text-zinc-400"
             >
               No historical records found for this period.
             </motion.div>
           ) : (
-            <motion.div
-              key="chart"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-              className="w-full h-full"
+            <div
+              ref={scrollRef}
+              onScroll={checkScrollability}
+              className="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
             >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data} margin={{ top: 10, right: 8, left: -18, bottom: 0 }}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="#888888"
-                    opacity={0.15}
-                  />
-                  <XAxis
-                    dataKey="month"
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(val: string) => (val ? val.split(" ")[0] : "")}
-                    tick={{ fontSize: 11, fill: "#888888" }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={formatCurrency}
-                    tick={{ fontSize: 11, fill: "#888888" }}
-                  />
-                  <Tooltip
-                    cursor={{ fill: "rgba(120, 120, 120, 0.08)", radius: 6 }}
-                    content={({ active, payload, label }) => {
-                      if (!active || !payload || !payload.length) return null;
-                      return (
-                        <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs space-y-1">
-                          <p className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{label}</p>
-                          {payload.map((item) => (
-                            <div key={item.name} className="flex items-center justify-between gap-4">
-                              <span
-                                className="flex items-center gap-1.5"
-                                style={{ color: item.color }}
+              {/* Guaranteed minimum width to prevent detail squishing on narrow viewports */}
+              <div className="w-full min-w-[500px] h-[240px] sm:h-[280px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={data}
+                    margin={{ top: 12, right: 16, left: 2, bottom: 4 }}
+                    onClick={(state) => {
+                      if (state && state.activeLabel) {
+                        setSelectedMonth((prev) =>
+                          prev === state.activeLabel ? null : (state.activeLabel as string)
+                        );
+                      }
+                    }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#888888"
+                      opacity={0.15}
+                    />
+                    <XAxis
+                      dataKey="month"
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(val: string) => (val ? val.split(" ")[0] : "")}
+                      tick={{ fontSize: 11, fill: "#888888" }}
+                    />
+                    <YAxis
+                      width={52}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={formatCurrency}
+                      tick={{ fontSize: 11, fill: "#888888" }}
+                    />
+                    <Tooltip
+                      allowEscapeViewBox={{ x: true, y: true }}
+                      wrapperStyle={{ zIndex: 100, pointerEvents: "none" }}
+                      cursor={{ fill: "rgba(120, 120, 120, 0.08)", radius: 6 }}
+                      content={({ active, payload, label }) => {
+                        if (!active || !payload || !payload.length) return null;
+                        return (
+                          <div className="p-3 rounded-xl bg-white/95 dark:bg-[#121215]/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-700 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 text-xs space-y-1 select-none pointer-events-none">
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
+                              {label}
+                            </p>
+                            {payload.map((item) => (
+                              <div
+                                key={item.name}
+                                className="flex items-center justify-between gap-4"
                               >
                                 <span
-                                  className="w-2 h-2 rounded-full"
-                                  style={{ backgroundColor: item.color }}
-                                />
-                                {item.name}:
-                              </span>
-                              <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                                ${Number(item.value).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    }}
-                  />
-                  <Legend
-                    verticalAlign="top"
-                    align="right"
-                    iconType="circle"
-                    wrapperStyle={{ paddingBottom: "10px", fontSize: "11px" }}
-                  />
-                  <Bar
-                    name="Income"
-                    dataKey="income"
-                    fill="var(--chart-income)"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={32}
-                    isAnimationActive={false}
-                  />
-                  <Bar
-                    name="Expenses"
-                    dataKey="expenses"
-                    fill="var(--chart-expenses)"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={32}
-                    isAnimationActive={false}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </motion.div>
+                                  className="flex items-center gap-1.5"
+                                  style={{ color: item.color }}
+                                >
+                                  <span
+                                    className="w-2 h-2 rounded-full"
+                                    style={{ backgroundColor: item.color }}
+                                  />
+                                  {item.name}:
+                                </span>
+                                <span className="font-semibold text-zinc-900 dark:text-zinc-100 font-mono">
+                                  $
+                                  {Number(item.value).toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                  })}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }}
+                    />
+                    <Legend
+                      verticalAlign="top"
+                      align="right"
+                      iconType="circle"
+                      wrapperStyle={{ paddingBottom: "10px", fontSize: "11px" }}
+                    />
+                    <Bar
+                      name="Income"
+                      dataKey="income"
+                      fill="var(--chart-income)"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={32}
+                      isAnimationActive={false}
+                      className="cursor-pointer"
+                    >
+                      {data.map((entry) => {
+                        const isDimmed =
+                          selectedMonth !== null && selectedMonth !== entry.month;
+                        return (
+                          <Cell
+                            key={`income-${entry.month}`}
+                            opacity={isDimmed ? 0.35 : 1}
+                            className="transition-opacity duration-200"
+                          />
+                        );
+                      })}
+                    </Bar>
+                    <Bar
+                      name="Expenses"
+                      dataKey="expenses"
+                      fill="var(--chart-expenses)"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={32}
+                      isAnimationActive={false}
+                      className="cursor-pointer"
+                    >
+                      {data.map((entry) => {
+                        const isDimmed =
+                          selectedMonth !== null && selectedMonth !== entry.month;
+                        return (
+                          <Cell
+                            key={`expenses-${entry.month}`}
+                            opacity={isDimmed ? 0.35 : 1}
+                            className="transition-opacity duration-200"
+                          />
+                        );
+                      })}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           )}
         </AnimatePresence>
       </div>
