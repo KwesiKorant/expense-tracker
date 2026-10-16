@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Eye,
   EyeOff,
+  AlertCircle,
 } from "lucide-react";
 import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
@@ -244,9 +245,10 @@ export function AuthCard({ initialMode = "login" }: AuthCardProps) {
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium animate-shake"
+              className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-center gap-2 animate-shake"
             >
-              {errorMsg}
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+              <span>{errorMsg}</span>
             </motion.div>
           )}
 

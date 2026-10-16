@@ -107,17 +107,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-2xl bg-white dark:bg-[#121215] border border-zinc-200 dark:border-zinc-800"
             >
               {item.type === "success" && (
-                <div className="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                <div className="p-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 shrink-0">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
               )}
               {item.type === "error" && (
-                <div className="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                <div className="p-1 rounded-lg bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20 dark:border-rose-500/30 shrink-0">
                   <AlertCircle className="w-4 h-4" />
                 </div>
               )}
               {item.type === "info" && (
-                <div className="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                <div className="p-1 rounded-lg bg-sky-500/10 dark:bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 dark:border-sky-500/30 shrink-0">
                   <Info className="w-4 h-4" />
                 </div>
               )}

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { LogOut, User as UserIcon, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -33,6 +33,17 @@ export function Header({
 }: HeaderProps) {
   const queryClient = useQueryClient();
   const [optimisticTab, setOptimisticTab] = useState<"overview" | "ledger" | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!showLogoutConfirm) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowLogoutConfirm(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showLogoutConfirm]);
 
   // Clear optimistic override once prop catches up
   if (optimisticTab && activeTab === optimisticTab) {
@@ -64,7 +75,8 @@ export function Header({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md">
+    <>
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand & Navigation Tabs */}
         <div className="flex items-center gap-2.5 sm:gap-6">
@@ -148,8 +160,8 @@ export function Header({
 
           <button
             type="button"
-            onClick={onLogout}
-            className="btn-tactile inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400 dark:hover:border-zinc-600 cursor-pointer"
+            onClick={() => setShowLogoutConfirm(true)}
+            className="btn-tactile inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/15 hover:border-rose-300/60 dark:hover:border-rose-800/60 cursor-pointer transition-colors"
             title="Sign Out"
             aria-label="Sign Out"
           >
@@ -158,5 +170,76 @@ export function Header({
         </div>
       </div>
     </header>
+
+    {/* Institutional Sign Out Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLogoutConfirm(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            {/* Dialog Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 8 }}
+              transition={{ type: "spring", stiffness: 420, damping: 30 }}
+              className="relative z-10 w-full max-w-sm bg-white dark:bg-[#121215] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 overflow-hidden shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="logout-dialog-title"
+            >
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 dark:bg-rose-500/15 border border-rose-500/20 dark:border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                  <LogOut className="w-5 h-5" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg cursor-pointer"
+                  aria-label="Cancel"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <h3 id="logout-dialog-title" className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-4">
+                Sign out of Expense Tracker?
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">
+                Are you sure you want to end your active session? You will need to log back in to access your ledger.
+              </p>
+
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="btn-tactile px-4 py-2 rounded-xl text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowLogoutConfirm(false);
+                    onLogout();
+                  }}
+                  className="btn-tactile inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white border border-rose-700 shadow-sm shadow-rose-950/20 active:scale-95 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sign Out
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

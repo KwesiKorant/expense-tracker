@@ -66,7 +66,7 @@ export function KpiStrip({
             <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Total Income
             </span>
-            <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60 transition-transform duration-150 hover:scale-105 active:scale-95">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 transition-transform duration-150 hover:scale-105 active:scale-95">
               <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
@@ -105,7 +105,7 @@ export function KpiStrip({
             <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Total Expenses
             </span>
-            <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60 transition-transform duration-150 hover:scale-105 active:scale-95">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20 dark:border-rose-500/30 transition-transform duration-150 hover:scale-105 active:scale-95">
               <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
@@ -144,7 +144,13 @@ export function KpiStrip({
             <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Net Cash Flow
             </span>
-            <div className="p-1.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-700/60 transition-transform duration-150 hover:scale-105 active:scale-95">
+            <div
+              className={`p-1.5 sm:p-2 rounded-xl transition-transform duration-150 hover:scale-105 active:scale-95 border ${
+                isSurplus
+                  ? "bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30"
+                  : "bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30"
+              }`}
+            >
               <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
@@ -167,7 +173,9 @@ export function KpiStrip({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
-                className="text-[10px] sm:text-xs text-zinc-400 truncate w-full"
+                className={`text-[10px] sm:text-xs truncate w-full font-medium ${
+                  isSurplus ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                }`}
               >
                 {isSurplus ? "Positive surplus" : "Negative deficit"}
               </motion.p>

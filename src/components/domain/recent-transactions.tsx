@@ -136,8 +136,8 @@ export function RecentTransactions({
                   <div
                     className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-transform duration-150 group-hover:scale-105 ${
                       tx.type === "INCOME"
-                        ? "bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-900 dark:border-zinc-200"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
+                        ? "bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30"
+                        : "bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30"
                     }`}
                   >
                     {tx.type === "INCOME" ? (
@@ -168,8 +168,8 @@ export function RecentTransactions({
                   <span
                     className={`text-xs font-semibold tabular-nums ${
                       tx.type === "INCOME"
-                        ? "text-zinc-950 dark:text-zinc-50 font-bold"
-                        : "text-zinc-500 dark:text-zinc-400"
+                        ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                        : "text-zinc-800 dark:text-zinc-200 font-medium"
                     }`}
                   >
                     {tx.type === "INCOME" ? "+" : "-"}

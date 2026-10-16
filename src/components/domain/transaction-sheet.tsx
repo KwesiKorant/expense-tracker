@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ArrowDownRight, ArrowUpRight, Loader2, Plus } from "lucide-react";
+import { X, ArrowDownRight, ArrowUpRight, Loader2, Plus, AlertCircle } from "lucide-react";
 import { useMobileSheetDrag } from "@/hooks/use-mobile-sheet-drag";
 import { useToast } from "@/components/ui/toast";
 import { CustomDropdown } from "@/components/ui/custom-dropdown";
@@ -234,13 +234,14 @@ function TransactionSheetForm({
       </div>
 
       {errorMsg && (
-        <div className="mt-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-medium animate-shake">
-          {errorMsg}
+        <div className="mt-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-center gap-2 animate-shake">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+          <span>{errorMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-        {/* Type Switcher with Kinematic Sliding Layout Pill */}
+        {/* Type Switcher with Kinematic Sliding Layout Pill & Semantic Differentiation */}
         <div className="relative grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800">
           <button
             type="button"
@@ -250,14 +251,14 @@ function TransactionSheetForm({
             }}
             className={`btn-tactile relative flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors duration-150 cursor-pointer ${
               type === "EXPENSE"
-                ? "text-white dark:text-zinc-950"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "text-white"
+                : "text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400"
             }`}
           >
             {type === "EXPENSE" && (
               <motion.div
                 layoutId="sheet-type-pill"
-                className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
+                className="absolute inset-0 bg-rose-600 dark:bg-rose-600 rounded-lg -z-0 shadow-sm shadow-rose-950/20"
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             )}
@@ -272,14 +273,14 @@ function TransactionSheetForm({
             }}
             className={`btn-tactile relative flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-colors duration-150 cursor-pointer ${
               type === "INCOME"
-                ? "text-white dark:text-zinc-950"
-                : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? "text-white"
+                : "text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400"
             }`}
           >
             {type === "INCOME" && (
               <motion.div
                 layoutId="sheet-type-pill"
-                className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
+                className="absolute inset-0 bg-emerald-600 dark:bg-emerald-600 rounded-lg -z-0 shadow-sm shadow-emerald-950/20"
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             )}

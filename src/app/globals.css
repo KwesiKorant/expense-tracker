@@ -19,6 +19,13 @@
   --mono-3: #71717a;
   --mono-4: #a1a1aa;
   --mono-5: #d4d4d8;
+  --semantic-income: #059669;
+  --semantic-income-surface: rgba(16, 185, 129, 0.1);
+  --semantic-expense: #e11d48;
+  --semantic-expense-surface: rgba(244, 63, 94, 0.1);
+  --semantic-warning: #d97706;
+  --semantic-warning-surface: rgba(245, 158, 11, 0.1);
+  --semantic-destructive: #dc2626;
 }
 
 .dark {
@@ -38,6 +45,13 @@
   --mono-3: #a1a1aa;
   --mono-4: #71717a;
   --mono-5: #52525b;
+  --semantic-income: #34d399;
+  --semantic-income-surface: rgba(16, 185, 129, 0.15);
+  --semantic-expense: #fb7185;
+  --semantic-expense-surface: rgba(244, 63, 94, 0.15);
+  --semantic-warning: #fbbf24;
+  --semantic-warning-surface: rgba(245, 158, 11, 0.15);
+  --semantic-destructive: #ef4444;
 }
 
 html {

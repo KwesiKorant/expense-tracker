@@ -439,18 +439,18 @@ export function TransactionTable({
                         <span
                           className={`inline-flex items-center gap-1 font-mono tracking-tight ${
                             tx.type === "INCOME"
-                              ? "text-zinc-950 dark:text-zinc-50 font-bold"
-                              : "text-zinc-500 dark:text-zinc-400 font-medium"
+                              ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                              : "text-rose-600 dark:text-rose-400 font-medium"
                           }`}
                         >
                           {tx.type === "INCOME" ? (
                             <>
-                              <ArrowUpRight className="w-3.5 h-3.5 text-zinc-950 dark:text-zinc-50" />
+                              <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                               +{formatCurrency(tx.amount)}
                             </>
                           ) : (
                             <>
-                              <ArrowDownRight className="w-3.5 h-3.5 text-zinc-400" />
+                              <ArrowDownRight className="w-3.5 h-3.5 text-rose-500/80 dark:text-rose-400/80" />
                               -{formatCurrency(tx.amount)}
                             </>
                           )}
@@ -463,7 +463,7 @@ export function TransactionTable({
                               type="button"
                               disabled={actingId === tx.id}
                               onClick={() => handleAction(tx.id, "restore")}
-                              className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all cursor-pointer"
+                              className="p-1.5 text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 active:scale-90 transition-all cursor-pointer"
                               title="Restore to active ledger"
                             >
                               <RotateCcw className="w-4 h-4" />
@@ -473,7 +473,7 @@ export function TransactionTable({
                                 type="button"
                                 disabled={actingId === tx.id}
                                 onClick={() => setPurgeCandidate(tx)}
-                                className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all cursor-pointer"
+                                className="p-1.5 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 rounded-lg hover:bg-rose-500/10 dark:hover:bg-rose-500/15 active:scale-90 transition-all cursor-pointer"
                                 title="Delete forever (permanent purge)"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -497,7 +497,7 @@ export function TransactionTable({
                               type="button"
                               disabled={actingId === tx.id}
                               onClick={() => handleAction(tx.id, "archive", tx.description)}
-                              className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
+                              className="p-1.5 text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 rounded-lg hover:bg-amber-500/10 dark:hover:bg-amber-500/15 active:scale-90 hover:scale-105 transition-all cursor-pointer"
                               title="Soft-archive transaction"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -535,8 +535,8 @@ export function TransactionTable({
                       <div
                         className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${
                           tx.type === "INCOME"
-                            ? "bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-900 dark:border-zinc-200"
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
+                            ? "bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30"
+                            : "bg-rose-500/10 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20 dark:border-rose-500/30"
                         }`}
                       >
                         {tx.type === "INCOME" ? (
@@ -569,8 +569,8 @@ export function TransactionTable({
                       <span
                         className={`text-xs sm:text-sm font-mono tracking-tight ${
                           tx.type === "INCOME"
-                            ? "text-zinc-950 dark:text-zinc-50 font-bold"
-                            : "text-zinc-600 dark:text-zinc-400 font-semibold"
+                            ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                            : "text-rose-600 dark:text-rose-400 font-semibold"
                         }`}
                       >
                         {tx.type === "INCOME" ? "+" : "-"}
@@ -587,7 +587,7 @@ export function TransactionTable({
                           type="button"
                           disabled={actingId === tx.id}
                           onClick={() => handleAction(tx.id, "restore")}
-                          className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                          className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 rounded-lg cursor-pointer border border-emerald-500/20 dark:border-emerald-500/30"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
                           Restore
@@ -597,7 +597,7 @@ export function TransactionTable({
                             type="button"
                             disabled={actingId === tx.id}
                             onClick={() => setPurgeCandidate(tx)}
-                            className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                            className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 rounded-lg cursor-pointer border border-rose-500/20 dark:border-rose-500/30"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             Purge
@@ -621,7 +621,7 @@ export function TransactionTable({
                           type="button"
                           disabled={actingId === tx.id}
                           onClick={() => handleAction(tx.id, "archive", tx.description)}
-                          className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                          className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 rounded-lg cursor-pointer border border-zinc-200/60 dark:border-zinc-800 hover:border-amber-500/30"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           Archive
@@ -749,7 +749,7 @@ export function TransactionTable({
               aria-labelledby="purge-modal-title"
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-900 dark:text-zinc-100">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 dark:bg-rose-500/15 border border-rose-500/20 dark:border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400">
                   <AlertTriangle className="w-5 h-5" />
                 </div>
                 <button
@@ -780,12 +780,13 @@ export function TransactionTable({
                     {formatDate(purgeCandidate.date)} · {purgeCandidate.category?.name || "Uncategorized"}
                   </p>
                 </div>
-                <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
+                <span className={`font-mono font-bold whitespace-nowrap ${
+                  purgeCandidate.type === "INCOME" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                }`}>
                   {purgeCandidate.type === "INCOME" ? "+" : "-"}{formatCurrency(purgeCandidate.amount)}
                 </span>
               </div>
 
-              {/* Action Buttons */}
               {/* Action Buttons */}
               <div className="mt-6 flex items-center justify-end gap-2.5">
                 <button
@@ -802,9 +803,9 @@ export function TransactionTable({
                   isConfirming={isPurging}
                   onConfirm={handleConfirmPurge}
                   holdDurationMs={1200}
-                  icon={<Trash2 className="w-3.5 h-3.5 text-rose-500" />}
-                  className="h-9 px-4 rounded-xl text-xs font-semibold bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200"
-                  fillClassName="bg-rose-600/35 dark:bg-rose-500/30"
+                  icon={<Trash2 className="w-3.5 h-3.5 text-white" />}
+                  className="h-9 px-4 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white border border-rose-700 shadow-sm shadow-rose-950/20 active:scale-95"
+                  fillClassName="bg-rose-800/60 dark:bg-rose-900/60"
                 />
               </div>
             </motion.div>
