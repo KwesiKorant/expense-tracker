@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, type DragControls } from "motion/react";
 import { X, ArrowDownRight, ArrowUpRight, Loader2, Plus, AlertCircle } from "lucide-react";
 import { useMobileSheetDrag } from "@/hooks/use-mobile-sheet-drag";
 import { useToast } from "@/components/ui/toast";
@@ -33,6 +33,7 @@ interface TransactionSheetFormProps {
   categories: CategoryOption[];
   transactionToEdit?: TransactionToEdit | null;
   onCategoryCreated?: (cat: CategoryOption) => void;
+  dragControls?: DragControls;
 }
 
 function TransactionSheetForm({
@@ -41,6 +42,7 @@ function TransactionSheetForm({
   categories,
   transactionToEdit,
   onCategoryCreated,
+  dragControls,
 }: TransactionSheetFormProps) {
   const toast = useToast();
   const isEditing = Boolean(transactionToEdit);
@@ -218,11 +220,28 @@ function TransactionSheetForm({
 
   return (
     <>
-      {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800/80">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          {isEditing ? "Edit Transaction" : "Record Transaction"}
-        </h2>
+      {/* Header Area — Draggable via grab handle or header on mobile */}
+      <div
+        onPointerDown={(e) => {
+          if ((e.target as HTMLElement).closest("button")) return;
+          dragControls?.start(e);
+        }}
+        className={`flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800/80 ${
+          dragControls
+            ? "cursor-grab active:cursor-grabbing touch-none select-none"
+            : ""
+        }`}
+      >
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            {isEditing ? "Edit Transaction" : "Record Transaction"}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            {isEditing
+              ? "Modify existing transaction details"
+              : "Add a new ledger transaction entry"}
+          </p>
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -533,6 +552,7 @@ export function TransactionSheet({
               categories={categories}
               transactionToEdit={transactionToEdit}
               onCategoryCreated={onCategoryCreated}
+              dragControls={isMobile ? dragControls : undefined}
             />
           </motion.div>
         </div>

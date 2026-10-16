@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useId } from "react";
+import React, { useState, useRef, useEffect, useId, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, Check } from "lucide-react";
 
@@ -19,12 +19,19 @@ interface CustomDropdownProps {
   className?: string;
   ariaLabel?: string;
   disabled?: boolean;
+  align?: "left" | "right" | "auto";
+  matchTriggerWidth?: boolean;
 }
 
 /**
  * CustomDropdown Primitive — Arc-AA & Emil Kowalski Design Language Standard
- * Replaces native HTML selects with institutional glassmorphic popovers,
- * spring entrance physics, keyboard navigation, and full ARIA semantics.
+ * Replaces native HTML selects with institutional glassmorphic popovers.
+ * Features:
+ * - Responsive screen adaptation & collision detection (flips horizontal/vertical alignment at viewport boundaries)
+ * - Full-width form and compact toolbar modes
+ * - 60/120 FPS compositor physics via Framer Motion spring curves
+ * - Mobile overscroll containment & touch-friendly ergonomics
+ * - Full ARIA combobox/listbox accessibility and keyboard navigation
  */
 export function CustomDropdown({
   value,
@@ -35,12 +42,81 @@ export function CustomDropdown({
   className = "",
   ariaLabel,
   disabled = false,
+  align = "auto",
+  matchTriggerWidth,
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [horizontalAlign, setHorizontalAlign] = useState<"left" | "right">("left");
+  const [verticalPlacement, setVerticalPlacement] = useState<"bottom" | "top">("bottom");
   const containerRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
 
+  const isFullWidth = matchTriggerWidth || className.includes("w-full");
+  const isSmall = size === "sm";
+
   const selectedOption = options.find((opt) => opt.value === value);
+
+  // Responsive Collision & Viewport Boundary Detection
+  const computePlacement = useCallback(() => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Horizontal placement
+    if (isFullWidth) {
+      setHorizontalAlign("left");
+    } else if (align !== "auto") {
+      setHorizontalAlign(align);
+    } else {
+      const estimatedWidth = 260;
+      const spaceOnRight = viewportWidth - rect.left;
+      const spaceOnLeft = rect.right;
+
+      // If expanding rightwards will bleed past right viewport edge, but expanding leftwards fits:
+      if (spaceOnRight < estimatedWidth && spaceOnLeft >= estimatedWidth) {
+        setHorizontalAlign("right");
+      } else {
+        setHorizontalAlign("left");
+      }
+    }
+
+    // Vertical placement (flip upward if close to viewport bottom or virtual keyboard)
+    const estimatedHeight = 240;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    if (spaceBelow < estimatedHeight && spaceAbove > spaceBelow) {
+      setVerticalPlacement("top");
+    } else {
+      setVerticalPlacement("bottom");
+    }
+  }, [align, isFullWidth]);
+
+  const handleOpen = () => {
+    if (disabled) return;
+    if (!isOpen) {
+      computePlacement();
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleWindowChange = () => {
+      computePlacement();
+    };
+
+    window.addEventListener("resize", handleWindowChange);
+    window.addEventListener("scroll", handleWindowChange, true);
+    return () => {
+      window.removeEventListener("resize", handleWindowChange);
+      window.removeEventListener("scroll", handleWindowChange, true);
+    };
+  }, [isOpen, computePlacement]);
 
   // Close on outside pointer click
   useEffect(() => {
@@ -69,13 +145,14 @@ export function CustomDropdown({
 
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      setIsOpen((prev) => !prev);
+      handleOpen();
       return;
     }
 
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       if (!isOpen) {
+        computePlacement();
         setIsOpen(true);
         return;
       }
@@ -95,19 +172,27 @@ export function CustomDropdown({
     }
   };
 
-  const isSmall = size === "sm";
+  // Popover positioning and sizing classes
+  const placementClasses =
+    verticalPlacement === "top" ? "bottom-full mb-1.5" : "top-full mt-1.5";
+
+  const alignmentClasses = isFullWidth
+    ? "left-0 right-0 w-full min-w-full"
+    : horizontalAlign === "right"
+      ? "right-0 left-auto w-max min-w-full max-w-[min(280px,calc(100vw-1.5rem))]"
+      : "left-0 right-auto w-max min-w-full max-w-[min(280px,calc(100vw-1.5rem))]";
 
   return (
     <div
       ref={containerRef}
-      className={`relative inline-block ${isOpen ? "z-30" : "z-10"} ${className}`}
+      className={`relative inline-block ${isOpen ? "z-40" : "z-10"} ${className}`}
       onKeyDown={handleKeyDown}
     >
       {/* Trigger Button */}
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleOpen}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={listboxId}
@@ -118,7 +203,7 @@ export function CustomDropdown({
             : "h-11 px-3.5 text-sm bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700"
         } ${isOpen ? "ring-2 ring-zinc-950/10 dark:ring-zinc-100/10 border-zinc-400 dark:border-zinc-600" : ""}`}
       >
-        <span className="truncate">
+        <span className="truncate flex-1 text-left">
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         <ChevronDown
@@ -134,11 +219,11 @@ export function CustomDropdown({
           <motion.div
             id={listboxId}
             role="listbox"
-            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            initial={{ opacity: 0, scale: 0.96, y: verticalPlacement === "top" ? 4 : -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            exit={{ opacity: 0, scale: 0.96, y: verticalPlacement === "top" ? 4 : -4 }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className={`absolute top-full mt-1.5 z-50 left-0 min-w-full w-max max-w-[280px] rounded-xl bg-white/95 dark:bg-[#121215]/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 p-1 overflow-hidden max-h-60 overflow-y-auto [scrollbar-width:thin]`}
+            className={`absolute ${placementClasses} ${alignmentClasses} z-50 rounded-xl bg-white/95 dark:bg-[#121215]/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 p-1 overflow-x-hidden max-h-60 overflow-y-auto overscroll-contain [scrollbar-width:thin]`}
           >
             {options.map((opt) => {
               const isSelected = opt.value === value;
@@ -151,7 +236,7 @@ export function CustomDropdown({
                     onChange(opt.value);
                     setIsOpen(false);
                   }}
-                  className={`flex items-center justify-between gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150 select-none ${
+                  className={`flex items-center justify-between gap-2.5 px-3 py-2.5 sm:py-2 rounded-lg cursor-pointer transition-colors duration-150 select-none ${
                     isSmall ? "text-xs" : "text-sm"
                   } ${
                     isSelected
@@ -159,8 +244,8 @@ export function CustomDropdown({
                       : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium"
                   }`}
                 >
-                  <span className="truncate">{opt.label}</span>
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="truncate flex-1">{opt.label}</span>
+                  <div className="flex items-center gap-1.5 shrink-0 ml-1">
                     {opt.sublabel && (
                       <span className="text-[10px] uppercase font-mono tracking-wider px-1.5 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400">
                         {opt.sublabel}
