@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, type Variants } from "motion/react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
@@ -15,7 +14,7 @@ interface KpiStripProps {
   isLoading?: boolean;
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -26,13 +25,13 @@ const containerVariants = {
   },
 };
 
-const cardItemVariants = {
+const cardItemVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 420,
       damping: 32,
     },
