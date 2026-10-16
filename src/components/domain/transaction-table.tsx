@@ -24,6 +24,7 @@ import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
 import { HoldToConfirmButton } from "@/components/ui/hold-to-confirm-button";
 import { useToast } from "@/components/ui/toast";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 interface Category {
   id: string;
@@ -169,6 +170,18 @@ export function TransactionTable({
   const isArchiveEmpty = !isLoading && total === 0 && showArchived && !hasActiveFilters;
   const isFilterMiss = !isLoading && total === 0 && hasActiveFilters;
 
+  const categoryOptions = useMemo(
+    () => [
+      { value: "", label: "All Categories" },
+      ...categories.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+        sublabel: cat.type,
+      })),
+    ],
+    [categories]
+  );
+
   return (
     <EdgeCornerFrame className="p-5">
       {/* Table Header & Controls Toolbar */}
@@ -253,19 +266,16 @@ export function TransactionTable({
             })}
           </div>
 
-          {/* Category Dropdown */}
-          <select
+          {/* Custom Category Dropdown */}
+          <CustomDropdown
             value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 shrink-0"
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name} ({cat.type})
-              </option>
-            ))}
-          </select>
+            onChange={onCategoryChange}
+            options={categoryOptions}
+            placeholder="All Categories"
+            size="sm"
+            ariaLabel="Filter by category"
+            className="shrink-0"
+          />
 
           {/* Archive Toggle Pill */}
           <button
@@ -286,7 +296,6 @@ export function TransactionTable({
           value={search}
           onChange={onSearchChange}
           placeholder="Search by keywords..."
-          className="w-full sm:w-auto"
         />
       </div>
 

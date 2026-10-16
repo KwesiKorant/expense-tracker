@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { X, ArrowDownRight, ArrowUpRight, Loader2, Plus } from "lucide-react";
 import { useMobileSheetDrag } from "@/hooks/use-mobile-sheet-drag";
 import { useToast } from "@/components/ui/toast";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export interface CategoryOption {
   id: string;
@@ -392,17 +393,18 @@ function TransactionSheetForm({
               </div>
             </div>
           ) : (
-            <select
+            <CustomDropdown
               value={activeCategoryId}
-              onChange={(e) => setSelectedCategoryId(e.target.value)}
-              className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
-            >
-              {filteredCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setSelectedCategoryId(val)}
+              options={filteredCategories.map((cat) => ({
+                value: cat.id,
+                label: cat.name,
+              }))}
+              size="md"
+              placeholder="Select Category"
+              ariaLabel="Select transaction category"
+              className="w-full"
+            />
           )}
         </div>
 

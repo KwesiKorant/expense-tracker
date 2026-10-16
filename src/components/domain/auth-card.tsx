@@ -14,6 +14,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 interface AuthCardProps {
   initialMode?: "login" | "register";
@@ -354,17 +355,21 @@ export function AuthCard({ initialMode = "login" }: AuthCardProps) {
                   <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
                     Currency
                   </label>
-                  <select
+                  <CustomDropdown
                     value={defaultCurrency}
-                    onChange={(e) => setDefaultCurrency(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
-                  >
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="GHS">GHS (₵)</option>
-                    <option value="CAD">CAD ($)</option>
-                  </select>
+                    onChange={(val) => setDefaultCurrency(val)}
+                    options={[
+                      { value: "USD", label: "USD ($)" },
+                      { value: "EUR", label: "EUR (€)" },
+                      { value: "GBP", label: "GBP (£)" },
+                      { value: "GHS", label: "GHS (₵)" },
+                      { value: "CAD", label: "CAD ($)" },
+                    ]}
+                    size="md"
+                    placeholder="Select Currency"
+                    ariaLabel="Default Currency"
+                    className="w-full"
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
