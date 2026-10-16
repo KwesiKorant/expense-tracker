@@ -21,9 +21,10 @@ interface CashFlowMonth {
 
 interface CashFlowChartProps {
   data: CashFlowMonth[];
+  isLoading?: boolean;
 }
 
-export function CashFlowChart({ data }: CashFlowChartProps) {
+export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
   const formatCurrency = (val: number) => `$${val.toLocaleString()}`;
 
   return (
@@ -41,7 +42,11 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
 
       {/* GPU Boundary Containment wrapper per Arc-AA protocol */}
       <div className="chart-containment w-full h-[280px]">
-        {data.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full text-xs text-zinc-400 animate-pulse">
+            Loading analytics trajectory...
+          </div>
+        ) : data.length === 0 ? (
           <div className="flex items-center justify-center h-full text-xs text-zinc-400">
             No historical records found for this period.
           </div>

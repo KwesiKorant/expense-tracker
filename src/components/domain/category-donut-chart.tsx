@@ -20,9 +20,14 @@ interface CategoryDistributionItem {
 interface CategoryDonutChartProps {
   data: CategoryDistributionItem[];
   totalExpenses: number;
+  isLoading?: boolean;
 }
 
-export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartProps) {
+export function CategoryDonutChart({
+  data,
+  totalExpenses,
+  isLoading = false,
+}: CategoryDonutChartProps) {
   return (
     <EdgeCornerFrame className="p-5 h-full">
       <div className="flex items-center justify-between mb-4">
@@ -36,7 +41,11 @@ export function CategoryDonutChart({ data, totalExpenses }: CategoryDonutChartPr
         </div>
       </div>
 
-      {data.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center h-[280px] text-xs text-zinc-400 animate-pulse">
+          Loading category allocation...
+        </div>
+      ) : data.length === 0 ? (
         <div className="flex items-center justify-center h-[280px] text-xs text-zinc-400">
           No expenditure data recorded for this month.
         </div>

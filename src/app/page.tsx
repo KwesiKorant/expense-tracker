@@ -3,25 +3,18 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, User as UserIcon } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Header } from "@/components/domain/header";
 import { KpiStrip } from "@/components/domain/kpi-strip";
 import { CashFlowChart } from "@/components/domain/cash-flow-chart";
 import { CategoryDonutChart } from "@/components/domain/category-donut-chart";
-import { TransactionTable, type TransactionItem } from "@/components/domain/transaction-table";
+import { RecentTransactions } from "@/components/domain/recent-transactions";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
 import { useTransactionRealtime } from "@/hooks/use-transaction-realtime";
 
-export default function DashboardPage() {
+export default function DashboardOverviewPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Ledger state filters
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [showArchived, setShowArchived] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // 1. Fetch authenticated user profile
@@ -44,7 +37,7 @@ export default function DashboardPage() {
   // 2. Realtime CDC subscription for live multi-tab cache invalidation
   useTransactionRealtime(userProfile?.id);
 
-  // 3. Fetch categories
+  // 3. Fetch categories for quick-add modal
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -53,11 +46,11 @@ export default function DashboardPage() {
       const data = await res.json();
       return data.data.categories;
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes per TRD
+    staleTime: 15 * 60 * 1000,
   });
 
   // 4. Fetch Analytics Summary
-  const { data: analytics } = useQuery({
+  const { data: analytics, isPending: isAnalyticsLoading } = useQuery({
     queryKey: ["analytics", "summary"],
     queryFn: async () => {
       const res = await fetch("/api/v1/analytics/summary");
@@ -67,20 +60,12 @@ export default function DashboardPage() {
     },
   });
 
-  // 5. Fetch Ledger Transactions
-  const { data: transactionsData, isPending: isLedgerLoading } = useQuery({
-    queryKey: ["transactions", { page, search, selectedType, selectedCategory, showArchived }],
+  // 5. Fetch Recent Transactions (top 5 for dashboard overview)
+  const { data: recentTransactionsData, isPending: isRecentLoading } = useQuery({
+    queryKey: ["transactions", "recent"],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set("page", String(page));
-      params.set("limit", "10");
-      if (search) params.set("search", search);
-      if (selectedType) params.set("type", selectedType);
-      if (selectedCategory) params.set("categoryId", selectedCategory);
-      params.set("isArchived", String(showArchived));
-
-      const res = await fetch(`/api/v1/transactions?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to load transactions");
+      const res = await fetch("/api/v1/transactions?page=1&limit=5&isArchived=false");
+      if (!res.ok) throw new Error("Failed to load recent transactions");
       const data = await res.json();
       return data.data;
     },
@@ -98,34 +83,7 @@ export default function DashboardPage() {
     }
   };
 
-  // Transaction archive handler
-  const handleArchive = async (id: string) => {
-    try {
-      const res = await fetch(`/api/v1/transactions/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
-        queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      }
-    } catch (err) {
-      console.error("Archive failed:", err);
-    }
-  };
-
-  // Transaction restore handler
-  const handleRestore = async (id: string) => {
-    try {
-      const res = await fetch(`/api/v1/transactions/${id}/restore`, { method: "POST" });
-      if (res.ok) {
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
-        queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      }
-    } catch (err) {
-      console.error("Restore failed:", err);
-    }
-  };
-
-  const transactions: TransactionItem[] = transactionsData?.transactions || [];
-  const pagination = transactionsData?.pagination || { total: 0, totalPages: 1 };
+  const recentTransactions = recentTransactionsData?.transactions || [];
 
   const metrics = analytics?.metrics || {
     totalIncome: 0,
@@ -142,49 +100,13 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo & Brand */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200">
-              ET
-            </div>
-            <div>
-              <span className="font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
-                Expense Tracker
-              </span>
-              <span className="hidden sm:inline-block ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60">
-                Arc-AA 120 FPS
-              </span>
-            </div>
-          </div>
-
-          {/* User Controls & Theme */}
-          <div className="flex items-center gap-3">
-            {userProfile && (
-              <div className="hidden sm:flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs">
-                <UserIcon className="w-3.5 h-3.5 text-zinc-400" />
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[140px]">
-                  {userProfile.fullName}
-                </span>
-              </div>
-            )}
-
-            <ThemeToggle />
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400 dark:hover:border-zinc-600 active:scale-90 transition-all duration-150 cursor-pointer"
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Shared Header Navigation */}
+      <Header
+        activeTab="overview"
+        onOpenAddModal={() => setIsAddModalOpen(true)}
+        userProfile={userProfile}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content Dashboard */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -200,48 +122,22 @@ export default function DashboardPage() {
         {/* Analytics Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <CashFlowChart data={cashFlowHistory} />
+            <CashFlowChart data={cashFlowHistory} isLoading={isAnalyticsLoading} />
           </div>
           <div className="lg:col-span-1">
             <CategoryDonutChart
               data={categoryDistribution}
               totalExpenses={metrics.totalExpenses}
+              isLoading={isAnalyticsLoading}
             />
           </div>
         </div>
 
-        {/* Transaction Ledger Table */}
-        <TransactionTable
-          transactions={transactions}
-          total={pagination.total}
-          page={page}
-          totalPages={pagination.totalPages}
-          onPageChange={setPage}
-          categories={categories}
-          search={search}
-          onSearchChange={(val) => {
-            setSearch(val);
-            setPage(1);
-          }}
-          selectedType={selectedType}
-          onTypeChange={(val) => {
-            setSelectedType(val);
-            setPage(1);
-          }}
-          selectedCategory={selectedCategory}
-          onCategoryChange={(val) => {
-            setSelectedCategory(val);
-            setPage(1);
-          }}
-          showArchived={showArchived}
-          onToggleArchived={(val) => {
-            setShowArchived(val);
-            setPage(1);
-          }}
+        {/* Recent Activity Mini-Ledger with Direct Link to Full Ledger */}
+        <RecentTransactions
+          transactions={recentTransactions}
           onOpenAddModal={() => setIsAddModalOpen(true)}
-          onArchive={handleArchive}
-          onRestore={handleRestore}
-          isLoading={isLedgerLoading}
+          isLoading={isRecentLoading}
         />
       </main>
 
