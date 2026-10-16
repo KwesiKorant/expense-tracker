@@ -162,7 +162,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => handleScroll("left")}
               aria-label="Scroll left to view previous months"
-              className="absolute left-1.5 top-1/2 -translate-y-1/2 z-30 w-7 h-7 rounded-full bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-transform cursor-pointer backdrop-blur-sm"
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 z-30 w-7 h-7 rounded-full glass-pill border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-transform cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </motion.button>
@@ -179,7 +179,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => handleScroll("right")}
               aria-label="Scroll right to view more months"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 z-30 w-7 h-7 rounded-full bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-transform cursor-pointer backdrop-blur-sm"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 z-30 w-7 h-7 rounded-full glass-pill border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-90 transition-transform cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </motion.button>
@@ -265,7 +265,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
                       content={({ active, payload, label }) => {
                         if (!active || !payload || !payload.length) return null;
                         return (
-                          <div className="p-3 rounded-xl bg-white/95 dark:bg-[#121215]/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-700 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 text-xs space-y-1 select-none pointer-events-none">
+                          <div className="p-3 rounded-xl glass-panel border border-zinc-200 dark:border-zinc-700 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 text-xs space-y-1 select-none pointer-events-none">
                             <p className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
                               {label}
                             </p>

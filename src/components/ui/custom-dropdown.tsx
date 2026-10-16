@@ -223,7 +223,7 @@ export function CustomDropdown({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: verticalPlacement === "top" ? 4 : -4 }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className={`absolute ${placementClasses} ${alignmentClasses} z-50 rounded-xl bg-white/95 dark:bg-[#121215]/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 p-1 overflow-x-hidden max-h-60 overflow-y-auto overscroll-contain [scrollbar-width:thin]`}
+            className={`absolute ${placementClasses} ${alignmentClasses} z-50 rounded-xl glass-panel border border-zinc-200/90 dark:border-zinc-800 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 p-1 overflow-x-hidden max-h-60 overflow-y-auto overscroll-contain [scrollbar-width:thin]`}
           >
             {options.map((opt) => {
               const isSelected = opt.value === value;

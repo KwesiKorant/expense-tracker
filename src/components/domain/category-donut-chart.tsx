@@ -155,7 +155,7 @@ export function CategoryDonutChart({
                     const colorIndex =
                       (data.findIndex((d) => d.category === item.category) % 5) + 1;
                     return (
-                      <div className="p-3 rounded-xl bg-white/95 dark:bg-[#121215]/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-700 shadow-2xl shadow-zinc-950/20 dark:shadow-black/70 text-xs space-y-1 select-none pointer-events-none">
+                      <div className="p-3 rounded-xl glass-panel border border-zinc-200 dark:border-zinc-700 shadow-2xl shadow-zinc-950/20 dark:shadow-black/70 text-xs space-y-1 select-none pointer-events-none">
                         <div className="flex items-center gap-1.5 font-semibold text-zinc-900 dark:text-zinc-100">
                           <span
                             className="w-2.5 h-2.5 rounded-full"

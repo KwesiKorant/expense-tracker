@@ -522,7 +522,7 @@ export function TransactionSheet({
             exit={{ opacity: 0 }}
             style={{ opacity: backdropOpacity }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 glass-backdrop"
           />
 
           {/* Modal / Draggable Sheet */}

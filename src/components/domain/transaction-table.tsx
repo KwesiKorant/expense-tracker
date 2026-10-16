@@ -734,7 +734,7 @@ export function TransactionTable({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !isPurging && setPurgeCandidate(null)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 glass-backdrop"
             />
 
             {/* Dialog Content */}
