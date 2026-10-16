@@ -53,20 +53,23 @@ export function CategoryDonutChart({
         <div className="flex flex-col gap-4">
           {/* Centered Donut Graphic */}
           <div className="chart-containment relative w-full h-[180px] flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+            <ResponsiveContainer width="100%" height={180}>
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                 <Pie
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius={52}
-                  outerRadius={76}
+                  innerRadius={50}
+                  outerRadius={74}
                   paddingAngle={3}
                   dataKey="amount"
                   strokeWidth={0}
                 >
                   {data.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={`var(--mono-${(index % 5) + 1})`} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`var(--mono-${(index % 5) + 1}, #18181b)`}
+                    />
                   ))}
                 </Pie>
                 <Tooltip

@@ -42,7 +42,7 @@ export function KpiStrip({
             <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+        <div className="text-base sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center min-w-0 truncate">
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
@@ -64,7 +64,7 @@ export function KpiStrip({
             <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+        <div className="text-base sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center min-w-0 truncate">
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
@@ -86,7 +86,7 @@ export function KpiStrip({
             <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+        <div className="text-base sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center min-w-0 truncate">
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
@@ -108,11 +108,13 @@ export function KpiStrip({
             <PiggyBank className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+        <div className="text-base sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center min-w-0 truncate">
           {isLoading ? (
             <div className="w-20 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={200}>{savingsRate.toFixed(1)}%</TextReveal>
+            <TextReveal delayMs={200}>
+              {Number.isFinite(savingsRate) ? `${savingsRate.toFixed(1)}%` : "0.0%"}
+            </TextReveal>
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">Of monthly earnings saved</p>

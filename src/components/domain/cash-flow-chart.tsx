@@ -41,7 +41,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
       </div>
 
       {/* GPU Boundary Containment wrapper per Arc-AA protocol */}
-      <div className="chart-containment w-full h-[280px]">
+      <div className="chart-containment w-full h-[230px] sm:h-[280px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-full text-xs text-zinc-400 animate-pulse">
             Loading analytics trajectory...
@@ -52,7 +52,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <BarChart data={data} margin={{ top: 10, right: 8, left: -18, bottom: 0 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
@@ -63,6 +63,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
+                tickFormatter={(val: string) => val ? val.split(" ")[0] : ""}
                 tick={{ fontSize: 11, fill: "#888888" }}
               />
               <YAxis

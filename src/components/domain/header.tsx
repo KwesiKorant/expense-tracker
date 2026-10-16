@@ -26,12 +26,12 @@ export function Header({
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand & Navigation Tabs */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2.5 group">
+        <div className="flex items-center gap-2.5 sm:gap-6">
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200 transition-transform duration-150 group-active:scale-95">
               ET
             </div>
-            <span className="font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
+            <span className="hidden sm:inline font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
               Expense Tracker
             </span>
           </Link>

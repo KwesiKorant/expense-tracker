@@ -93,7 +93,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       {/* Toast Render Stage — Fixed Bottom-Right with Compositor Transitions */}
       <div
-        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"
+        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0 pb-[env(safe-area-inset-bottom)]"
         aria-live="polite"
       >
         <AnimatePresence>
