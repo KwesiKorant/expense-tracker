@@ -17,11 +17,11 @@ import {
   Receipt,
   AlertTriangle,
   X,
-  Loader2,
   Pencil,
 } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
+import { HoldToConfirmButton } from "@/components/ui/hold-to-confirm-button";
 import { useToast } from "@/components/ui/toast";
 
 interface Category {
@@ -180,7 +180,7 @@ export function TransactionTable({
           <a
             href="/api/v1/transactions/export"
             download="transactions-export.csv"
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 active:scale-[0.98] text-xs font-medium transition-all duration-150"
+            className="btn-tactile inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 text-xs font-medium cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             Export CSV
@@ -190,7 +190,7 @@ export function TransactionTable({
           <button
             type="button"
             onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+            className="btn-tactile inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add Entry
@@ -201,41 +201,36 @@ export function TransactionTable({
       {/* Filter Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 -mx-1 px-1 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden shrink-0">
-          {/* Type Filter Pills */}
-          <div className="flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs shrink-0">
-            <button
-              type="button"
-              onClick={() => onTypeChange("")}
-              className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
-                selectedType === ""
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
-              }`}
-            >
-              All
-            </button>
-            <button
-              type="button"
-              onClick={() => onTypeChange("EXPENSE")}
-              className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
-                selectedType === "EXPENSE"
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
-              }`}
-            >
-              Expenses
-            </button>
-            <button
-              type="button"
-              onClick={() => onTypeChange("INCOME")}
-              className={`px-3 py-1 rounded-lg font-medium active:scale-95 transition-all duration-150 cursor-pointer ${
-                selectedType === "INCOME"
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
-              }`}
-            >
-              Income
-            </button>
+          {/* Type Filter Pills with Kinematic Sliding Layout Pill */}
+          <div className="relative flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs shrink-0">
+            {[
+              { id: "", label: "All" },
+              { id: "EXPENSE", label: "Expenses" },
+              { id: "INCOME", label: "Income" },
+            ].map((tab) => {
+              const isActive = selectedType === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => onTypeChange(tab.id)}
+                  className={`btn-tactile relative px-3 py-1 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
+                    isActive
+                      ? "text-white dark:text-zinc-950 font-semibold"
+                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-type-filter"
+                      className="absolute inset-0 bg-zinc-900 dark:bg-zinc-100 rounded-lg -z-0"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Category Dropdown */}
@@ -320,7 +315,12 @@ export function TransactionTable({
           </div>
         </div>
       ) : isFilterMiss ? (
-        <div className="py-14 text-center text-zinc-400">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+          className="py-14 text-center text-zinc-400"
+        >
           <div className="flex flex-col items-center justify-center gap-2.5 max-w-sm mx-auto">
             <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 mb-1">
               <FileSpreadsheet className="w-5 h-5" />
@@ -340,13 +340,13 @@ export function TransactionTable({
                 onToggleArchived(false);
                 onPageChange(1);
               }}
-              className="mt-2 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer border border-zinc-200 dark:border-zinc-700"
+              className="btn-tactile mt-2 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold cursor-pointer border border-zinc-200 dark:border-zinc-700"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Clear Active Filters
             </button>
           </div>
-        </div>
+        </motion.div>
       ) : (
         <>
           {/* 1. Desktop & Tablet Institutional Tabular Grid (>= 768px) */}
@@ -556,7 +556,7 @@ export function TransactionTable({
                           type="button"
                           disabled={actingId === tx.id}
                           onClick={() => handleAction(tx.id, "restore")}
-                          className="inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                          className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
                           Restore
@@ -566,7 +566,7 @@ export function TransactionTable({
                             type="button"
                             disabled={actingId === tx.id}
                             onClick={() => setPurgeCandidate(tx)}
-                            className="inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                            className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             Purge
@@ -580,7 +580,7 @@ export function TransactionTable({
                             type="button"
                             disabled={actingId === tx.id}
                             onClick={() => onEdit(tx)}
-                            className="inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                            className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                             Edit
@@ -590,7 +590,7 @@ export function TransactionTable({
                           type="button"
                           disabled={actingId === tx.id}
                           onClick={() => handleAction(tx.id, "archive", tx.description)}
-                          className="inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
+                          className="btn-tactile inline-flex items-center gap-1 h-8 px-2.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200/60 dark:border-zinc-800"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           Archive
@@ -696,30 +696,26 @@ export function TransactionTable({
               </div>
 
               {/* Action Buttons */}
+              {/* Action Buttons */}
               <div className="mt-6 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setPurgeCandidate(null)}
                   disabled={isPurging}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer"
+                  className="btn-tactile px-4 py-2 rounded-xl text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmPurge}
-                  disabled={isPurging}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  {isPurging ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Purging...
-                    </>
-                  ) : (
-                    "Delete Forever"
-                  )}
-                </button>
+                <HoldToConfirmButton
+                  label="Hold to Delete Forever"
+                  confirmLabel="Purging Record..."
+                  isConfirming={isPurging}
+                  onConfirm={handleConfirmPurge}
+                  holdDurationMs={1200}
+                  icon={<Trash2 className="w-3.5 h-3.5 text-rose-500" />}
+                  className="h-9 px-4 rounded-xl text-xs font-semibold bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-zinc-200"
+                  fillClassName="bg-rose-600/35 dark:bg-rose-500/30"
+                />
               </div>
             </motion.div>
           </div>
