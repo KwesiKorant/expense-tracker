@@ -108,12 +108,56 @@ body {
   contain: layout style;
 }
 
-/* Prevent unwanted blue text selection on interactive charts */
+/* Comprehensive suppression of unwanted blue focus rings, tap highlights, and text selection on SVG charts */
 .chart-containment,
-.chart-containment svg,
-.chart-containment svg text {
-  user-select: none;
-  -webkit-user-select: none;
+.chart-containment *,
+.recharts-wrapper,
+.recharts-wrapper *,
+.recharts-surface,
+.recharts-surface *,
+.recharts-responsive-container,
+.recharts-responsive-container *,
+.recharts-layer,
+.recharts-layer *,
+.recharts-bar,
+.recharts-bar *,
+.recharts-pie,
+.recharts-sector {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.chart-containment:focus,
+.chart-containment:focus-visible,
+.chart-containment:active,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-wrapper:active,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-surface:active,
+.chart-containment svg:focus,
+.chart-containment svg:focus-visible,
+.chart-containment svg:active,
+.chart-containment svg *:focus,
+.chart-containment svg *:focus-visible,
+.chart-containment svg *:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.chart-containment::selection,
+.chart-containment *::selection,
+.recharts-wrapper::selection,
+.recharts-wrapper *::selection,
+.chart-containment svg::selection,
+.chart-containment svg *::selection {
+  background-color: transparent !important;
+  color: inherit !important;
 }
 
 /* CWE iOS auto-zoom defense (< 768px font-size 16px) */

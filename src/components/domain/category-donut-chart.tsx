@@ -41,36 +41,44 @@ export function CategoryDonutChart({
   const selectedItem = data.find((d) => d.category === selectedCategory);
 
   return (
-    <EdgeCornerFrame className="p-5 h-full select-none">
-      {/* Header and Selection Clear Indicator */}
-      <div className="flex items-center justify-between mb-4 gap-2">
-        <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+    <EdgeCornerFrame className="p-5 h-full select-none outline-none focus:outline-none">
+      {/* Header and Selection Clear Indicator with Fluid Layout Morphing */}
+      <motion.div
+        layout
+        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+        className="flex items-start justify-between mb-4 gap-3 min-h-[40px]"
+      >
+        <motion.div layout className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             Category Breakdown
           </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
             Monthly expenditure allocation by category
           </p>
-        </div>
+        </motion.div>
 
-        {/* Tactile Active Category Tag */}
+        {/* Tactile Active Category Tag with Smooth FLIP Spring Transition */}
         <AnimatePresence>
           {selectedCategory && (
             <motion.button
+              layout
               type="button"
-              initial={{ opacity: 0, scale: 0.9, y: 2 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 2 }}
+              initial={{ opacity: 0, scale: 0.85, x: 8 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.85, x: 8 }}
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
               onClick={() => setSelectedCategory(null)}
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 active:scale-95 transition-all cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 active:scale-95 transition-all cursor-pointer shrink-0"
               title="Click to reset to total"
             >
-              <span className="truncate max-w-[90px]">{selectedCategory}</span>
-              <X className="w-3 h-3 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200" />
+              <span className="truncate max-w-[100px] sm:max-w-[120px] font-medium">
+                {selectedCategory}
+              </span>
+              <X className="w-3 h-3 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 shrink-0" />
             </motion.button>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[280px] text-xs text-zinc-400 animate-pulse">

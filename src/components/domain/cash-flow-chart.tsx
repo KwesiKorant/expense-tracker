@@ -75,26 +75,32 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
     : 0;
 
   return (
-    <EdgeCornerFrame className="p-5 h-full select-none">
-      {/* Header and Active Selection Badge */}
-      <div className="flex items-center justify-between mb-4 gap-2">
-        <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+    <EdgeCornerFrame className="p-5 h-full select-none outline-none focus:outline-none">
+      {/* Header and Active Selection Badge with Fluid Layout Morphing */}
+      <motion.div
+        layout
+        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+        className="flex items-start sm:items-center justify-between mb-4 gap-2 min-h-[40px]"
+      >
+        <motion.div layout className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             6-Month Cash Flow Overview
           </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
             Monthly income vs expenditure trajectory
           </p>
-        </div>
+        </motion.div>
 
         {/* Lightweight Tactile Selection Indicator */}
         <AnimatePresence>
           {selectedMonth && selectedMonthData && (
             <motion.button
+              layout
               type="button"
-              initial={{ opacity: 0, scale: 0.9, y: 2 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 2 }}
+              initial={{ opacity: 0, scale: 0.85, x: 8 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.85, x: 8 }}
+              transition={{ type: "spring", stiffness: 450, damping: 32 }}
               onClick={() => setSelectedMonth(null)}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/80 active:scale-95 transition-all cursor-pointer shrink-0"
               title="Click to clear selection"
@@ -111,10 +117,10 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
             </motion.button>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {/* Chart Viewport Wrapper with Side Directional Indicators */}
-      <div className="relative w-full chart-containment">
+      <div className="relative w-full chart-containment outline-none focus:outline-none">
         {/* Left Side Scroll Indicator Arrow */}
         <AnimatePresence>
           {canScrollLeft && (
@@ -176,13 +182,16 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
             <div
               ref={scrollRef}
               onScroll={checkScrollability}
-              className="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              tabIndex={-1}
+              className="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden outline-none focus:outline-none focus-visible:outline-none select-none"
             >
               {/* Guaranteed minimum width to prevent detail squishing on narrow viewports */}
-              <div className="w-full min-w-[500px] h-[240px] sm:h-[280px]">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full min-w-[500px] h-[240px] sm:h-[280px] outline-none focus:outline-none select-none">
+                <ResponsiveContainer width="100%" height="100%" className="outline-none focus:outline-none select-none">
                   <BarChart
                     data={data}
+                    tabIndex={-1}
+                    className="outline-none focus:outline-none select-none"
                     margin={{ top: 12, right: 16, left: 2, bottom: 4 }}
                     onClick={(state) => {
                       if (state && state.activeLabel) {
