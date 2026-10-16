@@ -2,12 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { LogOut, Plus, User as UserIcon } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 interface HeaderProps {
   activeTab: "overview" | "ledger";
-  onOpenAddModal: () => void;
+  onOpenAddModal?: () => void;
   userProfile?: { fullName: string; email: string } | null;
   onLogout: () => void;
 }
@@ -15,11 +15,10 @@ interface HeaderProps {
 /**
  * Institutional Header Navigation Component
  * Provides instant zero-layout-shift routing between Overview and Ledger,
- * user identity presentation, theme toggle, and universal transaction recording.
+ * user identity presentation, theme toggle, and session logout.
  */
 export function Header({
   activeTab,
-  onOpenAddModal,
   userProfile,
   onLogout,
 }: HeaderProps) {
@@ -32,14 +31,9 @@ export function Header({
             <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200 transition-transform duration-150 group-active:scale-95">
               ET
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
-                Expense Tracker
-              </span>
-              <span className="hidden md:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60">
-                Arc-AA 120 FPS
-              </span>
-            </div>
+            <span className="font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
+              Expense Tracker
+            </span>
           </Link>
 
           {/* Navigation Tabs */}
@@ -67,20 +61,10 @@ export function Header({
           </nav>
         </div>
 
-        {/* Right: Actions, Identity, Theme, Logout */}
+        {/* Right: Identity, Theme, Logout */}
         <div className="flex items-center gap-2.5">
-          {/* Universal Quick-Add Button */}
-          <button
-            type="button"
-            onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-[0.98] transition-all duration-150 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Entry</span>
-          </button>
-
           {userProfile && (
-            <div className="hidden lg:flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs">
+            <div className="hidden sm:flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs">
               <UserIcon className="w-3.5 h-3.5 text-zinc-400" />
               <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[130px]">
                 {userProfile.fullName}
