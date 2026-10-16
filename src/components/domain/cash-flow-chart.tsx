@@ -41,13 +41,25 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
 
   const formatCurrency = (val: number) => `$${val.toLocaleString()}`;
 
-  // Evaluate horizontal scroll boundaries to toggle directional indicator arrows
+  const tickingRef = useRef(false);
+
+  // Evaluate horizontal scroll boundaries batched inside requestAnimationFrame
+  // Uses state equality checks to prevent unnecessary React re-render cycles during scrolling
   const checkScrollability = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 6);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+    if (!tickingRef.current) {
+      window.requestAnimationFrame(() => {
+        const el = scrollRef.current;
+        if (el) {
+          const { scrollLeft, scrollWidth, clientWidth } = el;
+          const left = scrollLeft > 6;
+          const right = scrollLeft < scrollWidth - clientWidth - 6;
+          setCanScrollLeft((prev) => (prev !== left ? left : prev));
+          setCanScrollRight((prev) => (prev !== right ? right : prev));
+        }
+        tickingRef.current = false;
+      });
+      tickingRef.current = true;
+    }
   }, []);
 
   useEffect(() => {
@@ -76,26 +88,21 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
 
   return (
     <EdgeCornerFrame className="p-5 h-full select-none outline-none focus:outline-none">
-      {/* Header and Active Selection Badge with Fluid Layout Morphing */}
-      <motion.div
-        layout
-        transition={{ type: "spring", stiffness: 450, damping: 32 }}
-        className="flex items-start sm:items-center justify-between mb-4 gap-2 min-h-[40px]"
-      >
-        <motion.div layout className="min-w-0 flex-1">
+      {/* Header and Active Selection Badge */}
+      <div className="flex items-start sm:items-center justify-between mb-4 gap-2 min-h-[40px]">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             6-Month Cash Flow Overview
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
             Monthly income vs expenditure trajectory
           </p>
-        </motion.div>
+        </div>
 
-        {/* Lightweight Tactile Selection Indicator */}
+        {/* Lightweight Tactile Selection Indicator with Pure Compositor Animation */}
         <AnimatePresence>
           {selectedMonth && selectedMonthData && (
             <motion.button
-              layout
               type="button"
               initial={{ opacity: 0, scale: 0.85, x: 8 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -117,7 +124,7 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
             </motion.button>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       {/* Chart Viewport Wrapper with Side Directional Indicators */}
       <div className="relative w-full chart-containment outline-none focus:outline-none">

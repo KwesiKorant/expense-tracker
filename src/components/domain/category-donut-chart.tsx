@@ -42,26 +42,21 @@ export function CategoryDonutChart({
 
   return (
     <EdgeCornerFrame className="p-5 h-full select-none outline-none focus:outline-none">
-      {/* Header and Selection Clear Indicator with Fluid Layout Morphing */}
-      <motion.div
-        layout
-        transition={{ type: "spring", stiffness: 450, damping: 32 }}
-        className="flex items-start justify-between mb-4 gap-3 min-h-[40px]"
-      >
-        <motion.div layout className="min-w-0 flex-1">
+      {/* Header and Selection Clear Indicator */}
+      <div className="flex items-start justify-between mb-4 gap-3 min-h-[40px]">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             Category Breakdown
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
             Monthly expenditure allocation by category
           </p>
-        </motion.div>
+        </div>
 
-        {/* Tactile Active Category Tag with Smooth FLIP Spring Transition */}
+        {/* Tactile Active Category Tag with Pure Compositor Animation */}
         <AnimatePresence>
           {selectedCategory && (
             <motion.button
-              layout
               type="button"
               initial={{ opacity: 0, scale: 0.85, x: 8 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -78,7 +73,7 @@ export function CategoryDonutChart({
             </motion.button>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[280px] text-xs text-zinc-400 animate-pulse">
