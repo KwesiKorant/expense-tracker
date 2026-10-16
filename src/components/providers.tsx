@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./theme-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { OfflineIndicator } from "@/components/ui/offline-indicator";
+import { AppShell } from "@/components/domain/app-shell";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -24,7 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
-          {children}
+          <AppShell>{children}</AppShell>
           <OfflineIndicator />
         </ToastProvider>
       </QueryClientProvider>

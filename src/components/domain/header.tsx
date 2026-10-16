@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { LogOut, User as UserIcon } from "lucide-react";
@@ -23,6 +23,15 @@ export function Header({
   userProfile,
   onLogout,
 }: HeaderProps) {
+  const [optimisticTab, setOptimisticTab] = useState<"overview" | "ledger" | null>(null);
+
+  // Clear optimistic override once prop catches up
+  if (optimisticTab && activeTab === optimisticTab) {
+    setOptimisticTab(null);
+  }
+
+  const currentTab = optimisticTab ?? activeTab;
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
@@ -44,17 +53,18 @@ export function Header({
           >
             <Link
               href="/"
+              onClick={() => setOptimisticTab("overview")}
               className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
-                activeTab === "overview"
+                currentTab === "overview"
                   ? "text-white dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
-              {activeTab === "overview" && (
+              {currentTab === "overview" && (
                 <motion.div
                   layoutId="active-nav-tab"
                   className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
                 />
               )}
               <span className="relative z-10">Overview</span>
@@ -62,17 +72,18 @@ export function Header({
 
             <Link
               href="/ledger"
+              onClick={() => setOptimisticTab("ledger")}
               className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
-                activeTab === "ledger"
+                currentTab === "ledger"
                   ? "text-white dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
-              {activeTab === "ledger" && (
+              {currentTab === "ledger" && (
                 <motion.div
                   layoutId="active-nav-tab"
                   className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
                 />
               )}
               <span className="relative z-10">Ledger</span>
