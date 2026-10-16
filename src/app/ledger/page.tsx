@@ -220,6 +220,9 @@ export default function LedgerPage() {
           queryClient.invalidateQueries({ queryKey: ["transactions"] });
           queryClient.invalidateQueries({ queryKey: ["analytics"] });
         }}
+        onCategoryCreated={() => {
+          queryClient.invalidateQueries({ queryKey: ["categories"] });
+        }}
         categories={categories}
         transactionToEdit={transactionToEdit}
       />

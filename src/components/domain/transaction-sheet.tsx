@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ArrowDownRight, ArrowUpRight, Loader2 } from "lucide-react";
+import { X, ArrowDownRight, ArrowUpRight, Loader2, Plus } from "lucide-react";
 import { useMobileSheetDrag } from "@/hooks/use-mobile-sheet-drag";
 import { useToast } from "@/components/ui/toast";
 
@@ -31,6 +31,7 @@ interface TransactionSheetFormProps {
   onSuccess: () => void;
   categories: CategoryOption[];
   transactionToEdit?: TransactionToEdit | null;
+  onCategoryCreated?: (cat: CategoryOption) => void;
 }
 
 function TransactionSheetForm({
@@ -38,6 +39,7 @@ function TransactionSheetForm({
   onSuccess,
   categories,
   transactionToEdit,
+  onCategoryCreated,
 }: TransactionSheetFormProps) {
   const toast = useToast();
   const isEditing = Boolean(transactionToEdit);
@@ -65,6 +67,13 @@ function TransactionSheetForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Custom Category Creation State
+  const [localCategories, setLocalCategories] = useState<CategoryOption[]>(categories);
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCatError, setNewCatError] = useState("");
+  const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+
   const handleAmountChange = (val: string) => {
     setAmount(val);
     if (!val) {
@@ -83,11 +92,45 @@ function TransactionSheetForm({
     }
   };
 
-  const filteredCategories = categories.filter((c) => c.type === type);
+  const filteredCategories = localCategories.filter((c) => c.type === type);
   const activeCategoryId =
     selectedCategoryId && filteredCategories.some((c) => c.id === selectedCategoryId)
       ? selectedCategoryId
       : filteredCategories[0]?.id || "";
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) {
+      setNewCatError("Category name is required.");
+      return;
+    }
+    setIsSubmittingCategory(true);
+    setNewCatError("");
+    try {
+      const res = await fetch("/api/v1/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newCategoryName.trim(),
+          type,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to create category.");
+      }
+      const newCat: CategoryOption = data.data.category;
+      setLocalCategories((prev) => [...prev, newCat]);
+      setSelectedCategoryId(newCat.id);
+      setIsCreatingCategory(false);
+      setNewCategoryName("");
+      toast.success("Category created", `Created "${newCat.name}" (${type.toLowerCase()})`);
+      onCategoryCreated?.(newCat);
+    } catch (err: unknown) {
+      setNewCatError(err instanceof Error ? err.message : "Failed to create category.");
+    } finally {
+      setIsSubmittingCategory(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,22 +283,90 @@ function TransactionSheetForm({
           )}
         </div>
 
-        {/* Category Selector */}
+        {/* Category Selector with Inline Creation */}
         <div>
-          <label className="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">
-            Category
-          </label>
-          <select
-            value={activeCategoryId}
-            onChange={(e) => setSelectedCategoryId(e.target.value)}
-            className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
-          >
-            {filteredCategories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-zinc-400">
+              Category
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                setIsCreatingCategory(!isCreatingCategory);
+                setNewCatError("");
+              }}
+              className="text-[11px] font-semibold text-zinc-900 dark:text-zinc-100 hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="w-3 h-3" />
+              {isCreatingCategory ? "Cancel" : "New Category"}
+            </button>
+          </div>
+
+          {isCreatingCategory ? (
+            <div className="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                  Add Custom Category
+                </span>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                  {type}
+                </span>
+              </div>
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder={type === "EXPENSE" ? "e.g. Pet Care, Gym, Hardware" : "e.g. Consulting, Royalties"}
+                maxLength={50}
+                className="w-full h-9 px-3 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
+              />
+              {newCatError && (
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400">
+                  * {newCatError}
+                </p>
+              )}
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreatingCategory(false);
+                    setNewCategoryName("");
+                    setNewCatError("");
+                  }}
+                  className="px-2.5 py-1 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCreateCategory}
+                  disabled={isSubmittingCategory || !newCategoryName.trim()}
+                  className="px-3 py-1 text-xs font-semibold rounded-lg bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  {isSubmittingCategory ? (
+                    <>
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Category"
+                  )}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <select
+              value={activeCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+              className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
+            >
+              {filteredCategories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Date Input */}
@@ -314,6 +425,7 @@ export interface TransactionSheetProps {
   onSuccess: () => void;
   categories: CategoryOption[];
   transactionToEdit?: TransactionToEdit | null;
+  onCategoryCreated?: (cat: CategoryOption) => void;
 }
 
 export function TransactionSheet({
@@ -322,6 +434,7 @@ export function TransactionSheet({
   onSuccess,
   categories,
   transactionToEdit,
+  onCategoryCreated,
 }: TransactionSheetProps) {
   const { isMobile, backdropOpacity, dragProps } = useMobileSheetDrag(onClose);
 
@@ -361,6 +474,7 @@ export function TransactionSheet({
               onSuccess={onSuccess}
               categories={categories}
               transactionToEdit={transactionToEdit}
+              onCategoryCreated={onCategoryCreated}
             />
           </motion.div>
         </div>

@@ -153,16 +153,48 @@ async function runSuite() {
       userBCookie = regBRes.headers.get("set-cookie").split(";")[0];
     });
 
-    // Obtain a system category ID
-    await test("Setup: Fetch category ID for ledger testing", async () => {
+    // Obtain a system category ID & verify category creation and taxonomy
+    await test("Setup: Fetch categories & verify custom category creation", async () => {
       const catRes = await fetch(`${BASE_URL}/api/v1/categories`, {
         headers: { Cookie: userACookie, "X-Forwarded-For": randomIp() },
       });
       assert(catRes.status === 200, "Categories returned 200");
       const catBody = await catRes.json();
-      assert(catBody.data.categories.length > 0, "Categories exist");
+      assert(catBody.data.categories.length >= 14, "Enriched standard categories exist (>= 14)");
       const groceriesCat = catBody.data.categories.find((c) => c.name === "Groceries");
       systemCategoryId = (groceriesCat || catBody.data.categories[0]).id;
+
+      // Create Custom Category as User A
+      const customCatRes = await fetch(`${BASE_URL}/api/v1/categories`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Cookie: userACookie, "X-Forwarded-For": randomIp() },
+        body: JSON.stringify({
+          name: "Pet Care & Veterinary",
+          type: "EXPENSE",
+        }),
+      });
+      assert(customCatRes.status === 201, "Custom category created with 201");
+      const customCatBody = await customCatRes.json();
+      assert(customCatBody.data.category.name === "Pet Care & Veterinary", "Custom category name matches");
+
+      // Verify Duplicate Rejection (409)
+      const dupCatRes = await fetch(`${BASE_URL}/api/v1/categories`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Cookie: userACookie, "X-Forwarded-For": randomIp() },
+        body: JSON.stringify({
+          name: "Pet Care & Veterinary",
+          type: "EXPENSE",
+        }),
+      });
+      assert(dupCatRes.status === 409, "Duplicate category rejected with 409 Conflict");
+
+      // Verify User B does not see User A's custom category (Tenant Isolation)
+      const userBCatRes = await fetch(`${BASE_URL}/api/v1/categories`, {
+        headers: { Cookie: userBCookie, "X-Forwarded-For": randomIp() },
+      });
+      const userBCatBody = await userBCatRes.json();
+      const bFoundCustom = userBCatBody.data.categories.some((c) => c.name === "Pet Care & Veterinary");
+      assert(!bFoundCustom, "User B isolated from User A custom category");
     });
 
     // AC-2: Strict Anti-IDOR Isolation
