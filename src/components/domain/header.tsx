@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -14,8 +15,8 @@ interface HeaderProps {
 
 /**
  * Institutional Header Navigation Component
- * Provides instant zero-layout-shift routing between Overview and Ledger,
- * user identity presentation, theme toggle, and session logout.
+ * Provides kinematic sliding layout tab transitions, tactile button scaling,
+ * zero-FOUC theme switching, and identity display.
  */
 export function Header({
   activeTab,
@@ -27,8 +28,8 @@ export function Header({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand & Navigation Tabs */}
         <div className="flex items-center gap-2.5 sm:gap-6">
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200 transition-transform duration-150 group-active:scale-95">
+          <Link href="/" className="btn-tactile flex items-center gap-2.5 group shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200 transition-transform duration-150 group-hover:scale-105">
               ET
             </div>
             <span className="hidden sm:inline font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -36,27 +37,45 @@ export function Header({
             </span>
           </Link>
 
-          {/* Navigation Tabs */}
-          <nav className="flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs" aria-label="Main Navigation">
+          {/* Navigation Tabs with Kinematic Sliding Layout Pill */}
+          <nav
+            className="relative flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs"
+            aria-label="Main Navigation"
+          >
             <Link
               href="/"
-              className={`px-3.5 py-1.5 rounded-lg font-medium transition-all duration-150 cursor-pointer ${
+              className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
                 activeTab === "overview"
-                  ? "bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
+                  ? "text-white dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
-              Overview
+              {activeTab === "overview" && (
+                <motion.div
+                  layoutId="active-nav-tab"
+                  className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">Overview</span>
             </Link>
+
             <Link
               href="/ledger"
-              className={`px-3.5 py-1.5 rounded-lg font-medium transition-all duration-150 cursor-pointer ${
+              className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
                 activeTab === "ledger"
-                  ? "bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
+                  ? "text-white dark:text-zinc-950 font-semibold"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
             >
-              Ledger
+              {activeTab === "ledger" && (
+                <motion.div
+                  layoutId="active-nav-tab"
+                  className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">Ledger</span>
             </Link>
           </nav>
         </div>
@@ -77,7 +96,7 @@ export function Header({
           <button
             type="button"
             onClick={onLogout}
-            className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400 dark:hover:border-zinc-600 active:scale-90 transition-all duration-150 cursor-pointer"
+            className="btn-tactile inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400 dark:hover:border-zinc-600 cursor-pointer"
             title="Sign Out"
             aria-label="Sign Out"
           >
