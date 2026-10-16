@@ -166,11 +166,8 @@ export function TransactionTable({
       {/* Table Header & Controls Toolbar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-800/80">
         <div>
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
             Ledger Entries
-            <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-normal">
-              {total} records
-            </span>
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Realtime multi-tenant ledger with audit immutability
