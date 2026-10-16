@@ -33,10 +33,19 @@ export function TextReveal({
     "--reveal-scale": `${scale}`,
   };
 
+  const isBlockElement =
+    Component === "h1" ||
+    Component === "h2" ||
+    Component === "h3" ||
+    Component === "p" ||
+    Component === "div" ||
+    className.includes("block") ||
+    className.includes("flex");
+
   return (
     <Component
       style={style}
-      className={`text-reveal-item inline-block ${className}`}
+      className={`text-reveal-item ${isBlockElement ? "block" : "inline-block"} ${className}`}
     >
       {children}
     </Component>

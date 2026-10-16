@@ -23,6 +23,7 @@ import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
 import { HoldToConfirmButton } from "@/components/ui/hold-to-confirm-button";
 import { useToast } from "@/components/ui/toast";
+import { TextReveal } from "@/components/ui/text-reveal";
 
 interface Category {
   id: string;
@@ -48,6 +49,8 @@ interface TransactionTableProps {
   page: number;
   totalPages: number;
   onPageChange: (newPage: number) => void;
+  pageSize?: number;
+  onPageSizeChange?: (newPageSize: number) => void;
   categories: Category[];
   search: string;
   onSearchChange: (search: string) => void;
@@ -71,6 +74,8 @@ export function TransactionTable({
   page,
   totalPages,
   onPageChange,
+  pageSize = 10,
+  onPageSizeChange,
   categories,
   search,
   onSearchChange,
@@ -157,21 +162,34 @@ export function TransactionTable({
   };
 
   const hasActiveFilters = Boolean(search || selectedType || selectedCategory);
-  const isOnboardingEmpty = total === 0 && !hasActiveFilters && !showArchived;
-  const isArchiveEmpty = transactions.length === 0 && showArchived && !hasActiveFilters;
-  const isFilterMiss = transactions.length === 0;
+
+  // Empty states must strictly only render when data fetching has finished (!isLoading)
+  // and there truly is zero data matching the current scope.
+  const isOnboardingEmpty = !isLoading && total === 0 && !hasActiveFilters && !showArchived;
+  const isArchiveEmpty = !isLoading && total === 0 && showArchived && !hasActiveFilters;
+  const isFilterMiss = !isLoading && total === 0 && hasActiveFilters;
 
   return (
     <EdgeCornerFrame className="p-5">
       {/* Table Header & Controls Toolbar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-800/80">
         <div>
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          <TextReveal
+            as="h2"
+            delayMs={0}
+            yOffset={6}
+            className="text-base font-semibold text-zinc-900 dark:text-zinc-100"
+          >
             Ledger Entries
-          </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          </TextReveal>
+          <TextReveal
+            as="p"
+            delayMs={40}
+            yOffset={6}
+            className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5"
+          >
             Realtime multi-tenant ledger with audit immutability
-          </p>
+          </TextReveal>
         </div>
 
         {/* Action Buttons */}
@@ -364,8 +382,8 @@ export function TransactionTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
-                {isLoading ? (
-                  [...Array(5)].map((_, i) => (
+                {isLoading || (total > 0 && transactions.length === 0) ? (
+                  [...Array(Math.min(pageSize, 10))].map((_, i) => (
                     <tr key={i} className="animate-pulse border-b border-zinc-100 dark:border-zinc-800/40">
                       <td className="py-4 px-3">
                         <div className="w-20 h-3.5 rounded bg-zinc-200 dark:bg-zinc-800" />
@@ -485,8 +503,8 @@ export function TransactionTable({
 
           {/* 2. Mobile High-Density Ledger Cards (< 768px, Zero Horizontal Scroll) */}
           <div className="block md:hidden divide-y divide-zinc-100 dark:divide-zinc-800/60 -mx-5 px-5">
-            {isLoading ? (
-              [...Array(5)].map((_, i) => (
+            {isLoading || (total > 0 && transactions.length === 0) ? (
+              [...Array(Math.min(pageSize, 6))].map((_, i) => (
                 <div key={i} className="py-3.5 space-y-2 animate-pulse">
                   <div className="flex items-center justify-between">
                     <div className="w-32 h-4 rounded bg-zinc-200 dark:bg-zinc-800" />
@@ -608,31 +626,89 @@ export function TransactionTable({
       )}
       </div>
 
-      {/* Pagination Footer */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-xs text-zinc-500">
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              disabled={page <= 1}
-              onClick={() => onPageChange(page - 1)}
-              className="h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all duration-150 cursor-pointer"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              disabled={page >= totalPages}
-              onClick={() => onPageChange(page + 1)}
-              className="h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all duration-150 cursor-pointer"
-              aria-label="Next page"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+      {/* Pagination & Rows-Per-Page Footer */}
+      {(total > 0 || totalPages > 1) && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-xs text-zinc-500">
+          {/* Left: Record Range & Rows-Per-Page Selector */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <span className="tabular-nums">
+              Showing{" "}
+              <strong className="font-semibold text-zinc-900 dark:text-zinc-100">
+                {total === 0 ? 0 : (page - 1) * pageSize + 1}
+              </strong>
+              –
+              <strong className="font-semibold text-zinc-900 dark:text-zinc-100">
+                {Math.min(page * pageSize, total)}
+              </strong>{" "}
+              of{" "}
+              <strong className="font-semibold text-zinc-900 dark:text-zinc-100">
+                {total}
+              </strong>{" "}
+              records
+            </span>
+
+            {onPageSizeChange && (
+              <div className="flex items-center gap-1.5 pl-2 sm:pl-3 sm:border-l border-zinc-200 dark:border-zinc-800">
+                <span className="text-zinc-400 text-[11px]">Rows:</span>
+                <div
+                  className="relative flex items-center p-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 text-xs"
+                  role="group"
+                  aria-label="Rows per page selector"
+                >
+                  {[10, 20, 50].map((size) => {
+                    const isActive = pageSize === size;
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => onPageSizeChange(size)}
+                        className={`btn-tactile relative px-2.5 py-0.5 rounded-md font-medium text-[11px] transition-colors duration-150 cursor-pointer ${
+                          isActive
+                            ? "text-white dark:text-zinc-950 font-semibold"
+                            : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="active-page-size"
+                            className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-md -z-0"
+                            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative z-10">{size}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Page Navigation Controls */}
+          <div className="flex items-center justify-between sm:justify-end gap-3">
+            <span className="tabular-nums">
+              Page {page} of {Math.max(1, totalPages)}
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => onPageChange(page - 1)}
+                className="h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all duration-150 cursor-pointer"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => onPageChange(page + 1)}
+                className="h-8 w-8 sm:h-7 sm:w-7 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 disabled:opacity-40 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 transition-all duration-150 cursor-pointer"
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import { CashFlowChart } from "@/components/domain/cash-flow-chart";
 import { CategoryDonutChart } from "@/components/domain/category-donut-chart";
 import { RecentTransactions } from "@/components/domain/recent-transactions";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
+import { TextReveal } from "@/components/ui/text-reveal";
 import {
   queryKeys,
   fetchCategories,
@@ -55,12 +56,22 @@ export default function DashboardOverviewPage() {
       {/* Overview Header Title (Harmonized Layout Rhythm) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <TextReveal
+            as="h1"
+            delayMs={0}
+            yOffset={6}
+            className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50"
+          >
             Financial Overview
-          </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+          </TextReveal>
+          <TextReveal
+            as="p"
+            delayMs={40}
+            yOffset={6}
+            className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5"
+          >
             Real-time multi-tenant cash flow telemetry, category breakdowns, and performance analytics
-          </p>
+          </TextReveal>
         </div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">

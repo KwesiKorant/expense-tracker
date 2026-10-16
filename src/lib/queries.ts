@@ -6,6 +6,7 @@
 
 export interface LedgerQueryParams {
   page: number;
+  limit: number;
   search: string;
   selectedType: string;
   selectedCategory: string;
@@ -14,6 +15,7 @@ export interface LedgerQueryParams {
 
 export const defaultLedgerParams: LedgerQueryParams = {
   page: 1,
+  limit: 10,
   search: "",
   selectedType: "",
   selectedCategory: "",
@@ -52,7 +54,7 @@ export async function fetchRecentTransactions() {
 export async function fetchLedgerTransactions(params: LedgerQueryParams = defaultLedgerParams) {
   const searchParams = new URLSearchParams();
   searchParams.set("page", String(params.page));
-  searchParams.set("limit", "10");
+  searchParams.set("limit", String(params.limit || 10));
   if (params.search) searchParams.set("search", params.search);
   if (params.selectedType) searchParams.set("type", params.selectedType);
   if (params.selectedCategory) searchParams.set("categoryId", params.selectedCategory);

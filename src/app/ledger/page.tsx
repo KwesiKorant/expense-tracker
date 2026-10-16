@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { TransactionTable, type TransactionItem } from "@/components/domain/transaction-table";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
+import { TextReveal } from "@/components/ui/text-reveal";
 import {
   queryKeys,
   fetchCategories,
@@ -14,8 +15,9 @@ import {
 export default function LedgerPage() {
   const queryClient = useQueryClient();
 
-  // Ledger state filters
+  // Ledger state filters & pagination size
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -42,8 +44,8 @@ export default function LedgerPage() {
 
   // 2. Fetch Ledger Transactions
   const ledgerParams: LedgerQueryParams = useMemo(
-    () => ({ page, search, selectedType, selectedCategory, showArchived }),
-    [page, search, selectedType, selectedCategory, showArchived]
+    () => ({ page, limit, search, selectedType, selectedCategory, showArchived }),
+    [page, limit, search, selectedType, selectedCategory, showArchived]
   );
 
   const { data: transactionsData, isPending: isLedgerLoading } = useQuery({
@@ -52,6 +54,38 @@ export default function LedgerPage() {
     staleTime: 60 * 1000,
     placeholderData: keepPreviousData,
   });
+
+  const transactions: TransactionItem[] = transactionsData?.transactions || [];
+  const pagination = transactionsData?.pagination || { total: 0, totalPages: 1 };
+
+  // Proactive Next & Previous Page Prefetching for zero-latency pagination swaps
+  useEffect(() => {
+    if (page < pagination.totalPages) {
+      const nextPageParams = { ...ledgerParams, page: page + 1 };
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.ledgerTransactions(nextPageParams),
+        queryFn: () => fetchLedgerTransactions(nextPageParams),
+        staleTime: 60 * 1000,
+      });
+    }
+    if (page > 1) {
+      const prevPageParams = { ...ledgerParams, page: page - 1 };
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.ledgerTransactions(prevPageParams),
+        queryFn: () => fetchLedgerTransactions(prevPageParams),
+        staleTime: 60 * 1000,
+      });
+    }
+  }, [page, pagination.totalPages, ledgerParams, queryClient]);
+
+  // Adjust page if it exceeds totalPages without cascading effect renders
+  const [prevTotalPages, setPrevTotalPages] = useState(pagination.totalPages);
+  if (pagination.totalPages !== prevTotalPages) {
+    setPrevTotalPages(pagination.totalPages);
+    if (pagination.totalPages > 0 && page > pagination.totalPages) {
+      setPage(pagination.totalPages);
+    }
+  }
 
   // Transaction archive handler
   const handleArchive = async (id: string) => {
@@ -92,20 +126,27 @@ export default function LedgerPage() {
     }
   };
 
-  const transactions: TransactionItem[] = transactionsData?.transactions || [];
-  const pagination = transactionsData?.pagination || { total: 0, totalPages: 1 };
-
   return (
     <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Ledger Header Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <TextReveal
+            as="h1"
+            delayMs={0}
+            yOffset={6}
+            className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50"
+          >
             Transaction Ledger
-          </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+          </TextReveal>
+          <TextReveal
+            as="p"
+            delayMs={40}
+            yOffset={6}
+            className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5"
+          >
             Complete multi-tenant audit trail with instant keyboard search and category filtering
-          </p>
+          </TextReveal>
         </div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
@@ -124,6 +165,11 @@ export default function LedgerPage() {
         page={page}
         totalPages={pagination.totalPages}
         onPageChange={setPage}
+        pageSize={limit}
+        onPageSizeChange={(newLimit) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
         categories={categories}
         search={search}
         onSearchChange={(val) => {
