@@ -4,7 +4,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { LogOut, User as UserIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  queryKeys,
+  defaultLedgerParams,
+  fetchLedgerTransactions,
+  fetchAnalyticsSummary,
+  fetchRecentTransactions,
+} from "@/lib/queries";
 
 interface HeaderProps {
   activeTab: "overview" | "ledger";
@@ -23,6 +31,7 @@ export function Header({
   userProfile,
   onLogout,
 }: HeaderProps) {
+  const queryClient = useQueryClient();
   const [optimisticTab, setOptimisticTab] = useState<"overview" | "ledger" | null>(null);
 
   // Clear optimistic override once prop catches up
@@ -32,12 +41,39 @@ export function Header({
 
   const currentTab = optimisticTab ?? activeTab;
 
+  // Hover pre-warm triggers to guarantee 0ms latency on click
+  const prefetchOverview = () => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.analyticsSummary,
+      queryFn: fetchAnalyticsSummary,
+      staleTime: 60 * 1000,
+    });
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.recentTransactions,
+      queryFn: fetchRecentTransactions,
+      staleTime: 60 * 1000,
+    });
+  };
+
+  const prefetchLedger = () => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.ledgerTransactions(defaultLedgerParams),
+      queryFn: () => fetchLedgerTransactions(defaultLedgerParams),
+      staleTime: 60 * 1000,
+    });
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand & Navigation Tabs */}
         <div className="flex items-center gap-2.5 sm:gap-6">
-          <Link href="/" className="btn-tactile flex items-center gap-2.5 group shrink-0">
+          <Link
+            href="/"
+            prefetch={true}
+            onMouseEnter={prefetchOverview}
+            className="btn-tactile flex items-center gap-2.5 group shrink-0"
+          >
             <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200 transition-transform duration-150 group-hover:scale-105">
               ET
             </div>
@@ -53,6 +89,8 @@ export function Header({
           >
             <Link
               href="/"
+              prefetch={true}
+              onMouseEnter={prefetchOverview}
               onClick={() => setOptimisticTab("overview")}
               className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
                 currentTab === "overview"
@@ -64,7 +102,7 @@ export function Header({
                 <motion.div
                   layoutId="active-nav-tab"
                   className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
-                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  transition={{ type: "spring", stiffness: 550, damping: 36 }}
                 />
               )}
               <span className="relative z-10">Overview</span>
@@ -72,6 +110,8 @@ export function Header({
 
             <Link
               href="/ledger"
+              prefetch={true}
+              onMouseEnter={prefetchLedger}
               onClick={() => setOptimisticTab("ledger")}
               className={`relative px-3.5 py-1.5 rounded-lg font-medium transition-colors duration-150 cursor-pointer ${
                 currentTab === "ledger"
@@ -83,7 +123,7 @@ export function Header({
                 <motion.div
                   layoutId="active-nav-tab"
                   className="absolute inset-0 bg-zinc-950 dark:bg-zinc-100 rounded-lg -z-0"
-                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  transition={{ type: "spring", stiffness: 550, damping: 36 }}
                 />
               )}
               <span className="relative z-10">Ledger</span>

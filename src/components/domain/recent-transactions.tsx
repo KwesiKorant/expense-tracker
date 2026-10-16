@@ -4,8 +4,14 @@ import React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, ArrowDownRight, ArrowUpRight, Plus, FileSpreadsheet } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import type { TransactionItem } from "@/components/domain/transaction-table";
+import {
+  queryKeys,
+  defaultLedgerParams,
+  fetchLedgerTransactions,
+} from "@/lib/queries";
 
 interface RecentTransactionsProps {
   transactions: TransactionItem[];
@@ -18,7 +24,16 @@ export function RecentTransactions({
   onOpenAddModal,
   isLoading = false,
 }: RecentTransactionsProps) {
+  const queryClient = useQueryClient();
   const displayItems = transactions.slice(0, 5);
+
+  const prefetchLedger = () => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.ledgerTransactions(defaultLedgerParams),
+      queryFn: () => fetchLedgerTransactions(defaultLedgerParams),
+      staleTime: 60 * 1000,
+    });
+  };
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -55,6 +70,8 @@ export function RecentTransactions({
         </div>
         <Link
           href="/ledger"
+          prefetch={true}
+          onMouseEnter={prefetchLedger}
           className="btn-tactile inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors group cursor-pointer"
         >
           <span>View Full Ledger</span>

@@ -1,9 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useMemo } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { TransactionTable, type TransactionItem } from "@/components/domain/transaction-table";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
+import {
+  queryKeys,
+  fetchCategories,
+  fetchLedgerTransactions,
+  type LedgerQueryParams,
+} from "@/lib/queries";
 
 export default function LedgerPage() {
   const queryClient = useQueryClient();
@@ -29,33 +35,22 @@ export default function LedgerPage() {
 
   // 1. Fetch categories
   const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await fetch("/api/v1/categories");
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.data.categories;
-    },
+    queryKey: queryKeys.categories,
+    queryFn: fetchCategories,
     staleTime: 15 * 60 * 1000,
   });
 
   // 2. Fetch Ledger Transactions
-  const { data: transactionsData, isPending: isLedgerLoading } = useQuery({
-    queryKey: ["transactions", { page, search, selectedType, selectedCategory, showArchived }],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set("page", String(page));
-      params.set("limit", "10");
-      if (search) params.set("search", search);
-      if (selectedType) params.set("type", selectedType);
-      if (selectedCategory) params.set("categoryId", selectedCategory);
-      params.set("isArchived", String(showArchived));
+  const ledgerParams: LedgerQueryParams = useMemo(
+    () => ({ page, search, selectedType, selectedCategory, showArchived }),
+    [page, search, selectedType, selectedCategory, showArchived]
+  );
 
-      const res = await fetch(`/api/v1/transactions?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to load transactions");
-      const data = await res.json();
-      return data.data;
-    },
+  const { data: transactionsData, isPending: isLedgerLoading } = useQuery({
+    queryKey: queryKeys.ledgerTransactions(ledgerParams),
+    queryFn: () => fetchLedgerTransactions(ledgerParams),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
   // Transaction archive handler

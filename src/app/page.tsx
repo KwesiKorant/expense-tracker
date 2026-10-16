@@ -7,6 +7,12 @@ import { CashFlowChart } from "@/components/domain/cash-flow-chart";
 import { CategoryDonutChart } from "@/components/domain/category-donut-chart";
 import { RecentTransactions } from "@/components/domain/recent-transactions";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
+import {
+  queryKeys,
+  fetchCategories,
+  fetchAnalyticsSummary,
+  fetchRecentTransactions,
+} from "@/lib/queries";
 
 export default function DashboardOverviewPage() {
   const queryClient = useQueryClient();
@@ -14,36 +20,23 @@ export default function DashboardOverviewPage() {
 
   // 1. Fetch categories for quick-add modal
   const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await fetch("/api/v1/categories");
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.data.categories;
-    },
+    queryKey: queryKeys.categories,
+    queryFn: fetchCategories,
     staleTime: 15 * 60 * 1000,
   });
 
   // 2. Fetch Analytics Summary
   const { data: analytics, isPending: isAnalyticsLoading } = useQuery({
-    queryKey: ["analytics", "summary"],
-    queryFn: async () => {
-      const res = await fetch("/api/v1/analytics/summary");
-      if (!res.ok) return null;
-      const data = await res.json();
-      return data.data;
-    },
+    queryKey: queryKeys.analyticsSummary,
+    queryFn: fetchAnalyticsSummary,
+    staleTime: 60 * 1000,
   });
 
   // 3. Fetch Recent Transactions (top 5 for dashboard overview)
   const { data: recentTransactionsData, isPending: isRecentLoading } = useQuery({
-    queryKey: ["transactions", "recent"],
-    queryFn: async () => {
-      const res = await fetch("/api/v1/transactions?page=1&limit=5&isArchived=false");
-      if (!res.ok) throw new Error("Failed to load recent transactions");
-      const data = await res.json();
-      return data.data;
-    },
+    queryKey: queryKeys.recentTransactions,
+    queryFn: fetchRecentTransactions,
+    staleTime: 60 * 1000,
   });
 
   const recentTransactions = recentTransactionsData?.transactions || [];
