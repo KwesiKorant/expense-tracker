@@ -391,7 +391,11 @@ export function TransactionTable({
                       <td className="py-3.5 px-3 font-medium text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                         {formatDate(tx.date)}
                       </td>
-                      <td className="py-3.5 px-3 font-semibold text-zinc-900 dark:text-zinc-100 max-w-xs truncate">
+                      <td
+                        className="py-3.5 px-3 font-semibold text-zinc-900 dark:text-zinc-100 max-w-[200px] md:max-w-xs lg:max-w-md truncate cursor-pointer hover:underline underline-offset-2"
+                        title={tx.description}
+                        onClick={() => onEdit?.(tx)}
+                      >
                         {tx.description}
                       </td>
                       <td className="py-3.5 px-3 whitespace-nowrap">
@@ -510,8 +514,12 @@ export function TransactionTable({
                           <ArrowDownRight className="w-3.5 h-3.5" />
                         )}
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                      <div
+                        className="min-w-0 cursor-pointer"
+                        title={tx.description}
+                        onClick={() => onEdit?.(tx)}
+                      >
+                        <p className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate hover:underline underline-offset-2">
                           {tx.description}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">

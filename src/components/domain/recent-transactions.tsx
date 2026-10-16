@@ -108,7 +108,10 @@ export function RecentTransactions({
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                  <p
+                    className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate"
+                    title={tx.description || tx.category.name}
+                  >
                     {tx.description || tx.category.name}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">

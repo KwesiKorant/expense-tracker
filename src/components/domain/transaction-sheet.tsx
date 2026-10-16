@@ -175,10 +175,8 @@ function TransactionSheetForm({
       return;
     }
 
-    if (!description.trim()) {
-      setErrorMsg("Please enter a brief description.");
-      return;
-    }
+    const activeCat = filteredCategories.find((c) => c.id === activeCategoryId);
+    const finalDescription = description.trim() || activeCat?.name || "General Transaction";
 
     setIsSubmitting(true);
     try {
@@ -195,7 +193,7 @@ function TransactionSheetForm({
           amount: parsedAmount,
           categoryId: activeCategoryId,
           date,
-          description: description.trim(),
+          description: finalDescription,
         }),
       });
 
@@ -410,16 +408,30 @@ function TransactionSheetForm({
 
         {/* Description Input */}
         <div>
-          <label className="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">
-            Description
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-zinc-400">
+              Description <span className="text-[11px] text-zinc-400 font-normal">(optional — defaults to category)</span>
+            </label>
+            <span
+              className={`text-[10px] font-mono ${
+                description.length >= 240
+                  ? "text-amber-500 font-semibold"
+                  : "text-zinc-400"
+              }`}
+            >
+              {description.length}/255
+            </span>
+          </div>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="e.g. Weekly supermarket shopping"
+            placeholder={
+              filteredCategories.find((c) => c.id === activeCategoryId)?.name
+                ? `e.g. ${filteredCategories.find((c) => c.id === activeCategoryId)?.name}`
+                : "e.g. Weekly supermarket shopping"
+            }
             maxLength={255}
-            required
             className="w-full h-11 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none"
           />
         </div>
