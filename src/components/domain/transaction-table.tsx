@@ -176,16 +176,18 @@ export function TransactionTable({
         <div>
           <TextReveal
             as="h2"
-            delayMs={0}
-            yOffset={6}
+            delayMs={100}
+            durationMs={750}
+            yOffset={12}
             className="text-base font-semibold text-zinc-900 dark:text-zinc-100"
           >
             Ledger Entries
           </TextReveal>
           <TextReveal
             as="p"
-            delayMs={40}
-            yOffset={6}
+            delayMs={240}
+            durationMs={800}
+            yOffset={10}
             className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5"
           >
             Realtime multi-tenant ledger with audit immutability

@@ -5,6 +5,7 @@ import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-quer
 import { TransactionTable, type TransactionItem } from "@/components/domain/transaction-table";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { ScrollToTop, ScrollToTopSentinel } from "@/components/ui/scroll-to-top";
 import {
   queryKeys,
   fetchCategories,
@@ -127,22 +128,27 @@ export default function LedgerPage() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <main className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Zero-Layout Sentinel for Smooth Scroll-To-Top Observer */}
+      <ScrollToTopSentinel />
+
       {/* Ledger Header Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
         <div>
           <TextReveal
             as="h1"
-            delayMs={0}
-            yOffset={6}
+            delayMs={60}
+            durationMs={750}
+            yOffset={14}
             className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50"
           >
             Transaction Ledger
           </TextReveal>
           <TextReveal
             as="p"
-            delayMs={40}
-            yOffset={6}
+            delayMs={220}
+            durationMs={800}
+            yOffset={12}
             className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5"
           >
             Complete multi-tenant audit trail with instant keyboard search and category filtering
@@ -216,6 +222,8 @@ export default function LedgerPage() {
         categories={categories}
         transactionToEdit={transactionToEdit}
       />
+      {/* Sleek Floating Scroll-To-Top Button */}
+      <ScrollToTop />
     </main>
   );
 }

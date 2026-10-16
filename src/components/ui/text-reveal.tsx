@@ -20,8 +20,8 @@ interface TextRevealProps {
 export function TextReveal({
   children,
   delayMs = 0,
-  durationMs = 380,
-  yOffset = 8,
+  durationMs = 720,
+  yOffset = 14,
   scale = 0.98,
   className = "",
   as: Component = "span",

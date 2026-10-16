@@ -57,6 +57,7 @@ body {
   --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Universal Button Tactility (Compositor-Only Scale) */
@@ -89,7 +90,7 @@ body {
 @keyframes textRevealUp {
   0% {
     opacity: 0;
-    transform: translate3d(0, var(--reveal-y, 8px), 0) scale3d(var(--reveal-scale, 0.98), var(--reveal-scale, 0.98), 1);
+    transform: translate3d(0, var(--reveal-y, 14px), 0) scale3d(var(--reveal-scale, 0.98), var(--reveal-scale, 0.98), 1);
   }
   100% {
     opacity: 1;
@@ -98,7 +99,7 @@ body {
 }
 
 .text-reveal-item {
-  animation: textRevealUp var(--reveal-duration, 380ms) var(--ease-snappy) var(--reveal-delay, 0ms) both;
+  animation: textRevealUp var(--reveal-duration, 720ms) var(--ease-reveal) var(--reveal-delay, 0ms) both;
 }
 
 /* GPU Boundary Isolation for complex animated widgets and charts */
