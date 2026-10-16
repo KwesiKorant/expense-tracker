@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
+import { TextReveal } from "@/components/ui/text-reveal";
 
 interface CashFlowMonth {
   month: string;
@@ -91,12 +92,24 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
       {/* Header and Active Selection Badge */}
       <div className="flex items-start sm:items-center justify-between mb-4 gap-2 min-h-[40px]">
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+          <TextReveal
+            as="h3"
+            delayMs={260}
+            durationMs={720}
+            yOffset={10}
+            className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate"
+          >
             6-Month Cash Flow Overview
-          </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+          </TextReveal>
+          <TextReveal
+            as="p"
+            delayMs={340}
+            durationMs={720}
+            yOffset={8}
+            className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5"
+          >
             Monthly income vs expenditure trajectory
-          </p>
+          </TextReveal>
         </div>
 
         {/* Lightweight Tactile Selection Indicator with Pure Compositor Animation */}
@@ -127,7 +140,18 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
       </div>
 
       {/* Chart Viewport Wrapper with Side Directional Indicators */}
-      <div className="relative w-full chart-containment outline-none focus:outline-none">
+      <div
+        className="relative w-full chart-containment outline-none focus:outline-none select-none"
+        onMouseDown={(e) => {
+          // Zero-cost defense: Prevent browser-native focus outline transfer to internal SVG elements on mouse interaction
+          e.preventDefault();
+        }}
+        onFocusCapture={(e) => {
+          if (e.target instanceof SVGElement) {
+            (e.target as unknown as HTMLElement).blur?.();
+          }
+        }}
+      >
         {/* Left Side Scroll Indicator Arrow */}
         <AnimatePresence>
           {canScrollLeft && (
@@ -194,10 +218,16 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
             >
               {/* Guaranteed minimum width to prevent detail squishing on narrow viewports */}
               <div className="w-full min-w-[500px] h-[240px] sm:h-[280px] outline-none focus:outline-none select-none">
-                <ResponsiveContainer width="100%" height="100%" className="outline-none focus:outline-none select-none">
+                <ResponsiveContainer
+                  width="100%"
+                  height="100%"
+                  className="outline-none focus:outline-none select-none"
+                  style={{ outline: "none" }}
+                >
                   <BarChart
                     data={data}
                     tabIndex={-1}
+                    style={{ outline: "none" }}
                     className="outline-none focus:outline-none select-none"
                     margin={{ top: 12, right: 16, left: 2, bottom: 4 }}
                     onClick={(state) => {

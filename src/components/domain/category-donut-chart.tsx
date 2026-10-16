@@ -11,6 +11,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { X } from "lucide-react";
+import { TextReveal } from "@/components/ui/text-reveal";
 
 interface CategoryDistributionItem {
   category: string;
@@ -45,12 +46,24 @@ export function CategoryDonutChart({
       {/* Header and Selection Clear Indicator */}
       <div className="flex items-start justify-between mb-4 gap-3 min-h-[40px]">
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+          <TextReveal
+            as="h3"
+            delayMs={300}
+            durationMs={720}
+            yOffset={10}
+            className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate"
+          >
             Category Breakdown
-          </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+          </TextReveal>
+          <TextReveal
+            as="p"
+            delayMs={380}
+            durationMs={720}
+            yOffset={8}
+            className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5"
+          >
             Monthly expenditure allocation by category
-          </p>
+          </TextReveal>
         </div>
 
         {/* Tactile Active Category Tag with Pure Compositor Animation */}
@@ -86,9 +99,20 @@ export function CategoryDonutChart({
       ) : (
         <div className="flex flex-col gap-4">
           {/* Centered Donut Graphic with Unconstrained Tooltip Viewbox */}
-          <div className="relative w-full h-[180px] flex items-center justify-center overflow-visible z-20">
-            <ResponsiveContainer width="100%" height={180}>
-              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <div
+            className="relative w-full h-[180px] flex items-center justify-center overflow-visible z-20 chart-containment select-none outline-none focus:outline-none"
+            onMouseDown={(e) => {
+              // Zero-cost defense: Prevent browser-native focus outline transfer to internal SVG elements
+              e.preventDefault();
+            }}
+            onFocusCapture={(e) => {
+              if (e.target instanceof SVGElement) {
+                (e.target as unknown as HTMLElement).blur?.();
+              }
+            }}
+          >
+            <ResponsiveContainer width="100%" height={180} style={{ outline: "none" }}>
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }} tabIndex={-1} style={{ outline: "none" }}>
                 <Pie
                   data={data}
                   cx="50%"
