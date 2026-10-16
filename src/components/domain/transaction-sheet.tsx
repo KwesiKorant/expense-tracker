@@ -32,11 +32,30 @@ export function TransactionSheet({
 
   const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
   const [amount, setAmount] = useState("");
+  const [amountError, setAmountError] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [date, setDate] = useState("2026-10-15");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const handleAmountChange = (val: string) => {
+    setAmount(val);
+    if (!val) {
+      setAmountError("");
+      return;
+    }
+    const num = parseFloat(val);
+    if (isNaN(num)) {
+      setAmountError("Please enter a numeric amount.");
+    } else if (num <= 0) {
+      setAmountError("Amount must be greater than $0.00.");
+    } else if (val.includes(".") && val.split(".")[1]?.length > 2) {
+      setAmountError("Maximum of two decimal places allowed.");
+    } else {
+      setAmountError("");
+    }
+  };
 
   const filteredCategories = categories.filter((c) => c.type === type);
   const activeCategoryId =
@@ -50,7 +69,12 @@ export function TransactionSheet({
 
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      setErrorMsg("Please enter a valid amount greater than zero.");
+      setAmountError("Please enter a valid amount greater than zero.");
+      return;
+    }
+
+    if (amount.includes(".") && amount.split(".")[1]?.length > 2) {
+      setAmountError("Maximum of two decimal places allowed.");
       return;
     }
 
@@ -85,6 +109,7 @@ export function TransactionSheet({
 
       // Reset form
       setAmount("");
+      setAmountError("");
       setDescription("");
       toast.success(
         "Transaction recorded",
@@ -193,12 +218,21 @@ export function TransactionSheet({
                     step="0.01"
                     min="0.01"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => handleAmountChange(e.target.value)}
                     placeholder="0.00"
                     required
-                    className="w-full h-11 pl-8 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold text-base focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10"
+                    className={`w-full h-11 pl-8 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border ${
+                      amountError
+                        ? "border-zinc-900 dark:border-zinc-100 ring-1 ring-zinc-900/20 dark:ring-zinc-100/20"
+                        : "border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100"
+                    } text-zinc-900 dark:text-zinc-100 font-semibold text-base focus:outline-none focus:ring-1 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10`}
                   />
                 </div>
+                {amountError && (
+                  <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 font-medium flex items-center gap-1">
+                    <span>*</span> {amountError}
+                  </p>
+                )}
               </div>
 
               {/* Category Selector */}

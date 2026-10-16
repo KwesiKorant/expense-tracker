@@ -12,6 +12,8 @@ import {
   ChevronLeft,
   ChevronRight,
   FileSpreadsheet,
+  Archive,
+  Receipt,
 } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { ExpandingSearchDock } from "@/components/ui/expanding-search-dock";
@@ -79,12 +81,26 @@ export function TransactionTable({
   const [actingId, setActingId] = useState<string | null>(null);
   const toast = useToast();
 
-  const handleAction = async (id: string, action: "archive" | "restore") => {
+  const handleAction = async (id: string, action: "archive" | "restore", txDescription?: string) => {
     setActingId(id);
     try {
       if (action === "archive") {
         await onArchive(id);
-        toast.success("Transaction archived", "Record moved to archived ledger view.");
+        toast.info("Transaction archived", {
+          description: txDescription || "Record moved to archived ledger view.",
+          action: {
+            label: "Undo",
+            onClick: async () => {
+              try {
+                await onRestore(id);
+                toast.success("Transaction restored", "Record returned to active ledger.");
+              } catch {
+                toast.error("Restoration failed", "Could not restore transaction.");
+              }
+            },
+          },
+          durationMs: 5000,
+        });
       } else {
         await onRestore(id);
         toast.success("Transaction restored", "Record returned to active calculations.");
@@ -111,6 +127,11 @@ export function TransactionTable({
       minimumFractionDigits: 2,
     }).format(val);
   };
+
+  const hasActiveFilters = Boolean(search || selectedType || selectedCategory);
+  const isOnboardingEmpty = total === 0 && !hasActiveFilters && !showArchived;
+  const isArchiveEmpty = transactions.length === 0 && showArchived && !hasActiveFilters;
+  const isFilterMiss = transactions.length === 0;
 
   return (
     <EdgeCornerFrame className="p-5">
@@ -242,24 +263,84 @@ export function TransactionTable({
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
             {isLoading ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i} className="animate-pulse border-b border-zinc-100 dark:border-zinc-800/40">
+                  <td className="py-4 px-3">
+                    <div className="w-20 h-3.5 rounded bg-zinc-200 dark:bg-zinc-800" />
+                  </td>
+                  <td className="py-4 px-3">
+                    <div className="w-48 h-3.5 rounded bg-zinc-200 dark:bg-zinc-800" />
+                  </td>
+                  <td className="py-4 px-3">
+                    <div className="w-24 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                  </td>
+                  <td className="py-4 px-3 text-right">
+                    <div className="w-20 h-3.5 rounded bg-zinc-200 dark:bg-zinc-800 ml-auto" />
+                  </td>
+                  <td className="py-4 px-3 text-right">
+                    <div className="w-7 h-7 rounded-lg bg-zinc-200 dark:bg-zinc-800 ml-auto" />
+                  </td>
+                </tr>
+              ))
+            ) : isOnboardingEmpty ? (
               <tr>
-                <td colSpan={5} className="py-12 text-center text-zinc-400">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-zinc-950 dark:bg-zinc-50 animate-ping" />
-                    Updating ledger stream...
+                <td colSpan={5} className="py-14 text-center text-zinc-400">
+                  <div className="flex flex-col items-center justify-center gap-2.5 max-w-sm mx-auto">
+                    <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 mb-1">
+                      <Receipt className="w-5 h-5" />
+                    </div>
+                    <p className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">
+                      Your Ledger is Empty
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      You have not recorded any financial transactions yet. Start tracking by logging your first transaction.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={onOpenAddModal}
+                      className="mt-2 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 transition-all duration-150 cursor-pointer shadow-sm"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Record First Entry
+                    </button>
                   </div>
                 </td>
               </tr>
-            ) : transactions.length === 0 ? (
+            ) : isArchiveEmpty ? (
               <tr>
-                <td colSpan={5} className="py-12 text-center text-zinc-400">
-                  <div className="flex flex-col items-center justify-center gap-2.5">
-                    <FileSpreadsheet className="w-8 h-8 text-zinc-300 dark:text-zinc-700" />
-                    <p className="font-medium text-zinc-600 dark:text-zinc-300">
-                      No matching records found
+                <td colSpan={5} className="py-14 text-center text-zinc-400">
+                  <div className="flex flex-col items-center justify-center gap-2.5 max-w-sm mx-auto">
+                    <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 mb-1">
+                      <Archive className="w-5 h-5" />
+                    </div>
+                    <p className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">
+                      No Archived Transactions
                     </p>
-                    <p className="text-[11px] text-zinc-400">
-                      Adjust your active filters or record a new transaction.
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Soft-deleted records are securely stored here for audit compliance and can be restored at any time.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => onToggleArchived(false)}
+                      className="mt-2 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                    >
+                      Switch to Active Ledger
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ) : isFilterMiss ? (
+              <tr>
+                <td colSpan={5} className="py-14 text-center text-zinc-400">
+                  <div className="flex flex-col items-center justify-center gap-2.5 max-w-sm mx-auto">
+                    <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 mb-1">
+                      <FileSpreadsheet className="w-5 h-5" />
+                    </div>
+                    <p className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">
+                      No Matching Records
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {search ? `Zero records found matching "${search}".` : "No records match your active category or type filters."}
                     </p>
                     <button
                       type="button"
@@ -270,7 +351,7 @@ export function TransactionTable({
                         onToggleArchived(false);
                         onPageChange(1);
                       }}
-                      className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer"
+                      className="mt-2 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold active:scale-95 transition-all duration-150 cursor-pointer border border-zinc-200 dark:border-zinc-700"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       Clear Active Filters
@@ -332,7 +413,7 @@ export function TransactionTable({
                       <button
                         type="button"
                         disabled={actingId === tx.id}
-                        onClick={() => handleAction(tx.id, "archive")}
+                        onClick={() => handleAction(tx.id, "archive", tx.description)}
                         className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-90 hover:scale-105 transition-all cursor-pointer"
                         title="Soft-archive transaction"
                       >

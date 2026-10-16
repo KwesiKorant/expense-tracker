@@ -117,6 +117,7 @@ export default function DashboardOverviewPage() {
           netBalance={metrics.netBalance}
           savingsRate={metrics.savingsRate}
           activeMonth={metrics.activeMonth}
+          isLoading={isAnalyticsLoading}
         />
 
         {/* Analytics Charts Grid */}

@@ -11,6 +11,7 @@ interface KpiStripProps {
   netBalance: number;
   savingsRate: number;
   activeMonth?: string;
+  isLoading?: boolean;
 }
 
 export function KpiStrip({
@@ -19,6 +20,7 @@ export function KpiStrip({
   netBalance,
   savingsRate,
   activeMonth,
+  isLoading = false,
 }: KpiStripProps) {
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -40,8 +42,12 @@ export function KpiStrip({
             <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          <TextReveal delayMs={50}>{formatCurrency(totalIncome)}</TextReveal>
+        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+          {isLoading ? (
+            <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+          ) : (
+            <TextReveal delayMs={50}>{formatCurrency(totalIncome)}</TextReveal>
+          )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
           {activeMonth ? `${activeMonth} active income` : "Total recorded income"}
@@ -58,8 +64,12 @@ export function KpiStrip({
             <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          <TextReveal delayMs={100}>{formatCurrency(totalExpenses)}</TextReveal>
+        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+          {isLoading ? (
+            <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+          ) : (
+            <TextReveal delayMs={100}>{formatCurrency(totalExpenses)}</TextReveal>
+          )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
           {activeMonth ? `${activeMonth} expenditures` : "Total recorded expenses"}
@@ -76,8 +86,12 @@ export function KpiStrip({
             <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          <TextReveal delayMs={150}>{formatCurrency(netBalance)}</TextReveal>
+        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+          {isLoading ? (
+            <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+          ) : (
+            <TextReveal delayMs={150}>{formatCurrency(netBalance)}</TextReveal>
+          )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
           {netBalance >= 0 ? "Positive surplus" : "Negative deficit"}
@@ -94,8 +108,12 @@ export function KpiStrip({
             <PiggyBank className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          <TextReveal delayMs={200}>{savingsRate.toFixed(1)}%</TextReveal>
+        <div className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 h-8 flex items-center">
+          {isLoading ? (
+            <div className="w-20 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+          ) : (
+            <TextReveal delayMs={200}>{savingsRate.toFixed(1)}%</TextReveal>
+          )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">Of monthly earnings saved</p>
       </EdgeCornerFrame>
