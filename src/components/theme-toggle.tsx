@@ -2,7 +2,6 @@
 
 import React, { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
-import { motion, AnimatePresence } from "motion/react";
 import { Sun, Moon } from "lucide-react";
 
 function subscribe() {
@@ -19,7 +18,7 @@ function getServerSnapshot() {
 
 /**
  * Zero-FOUC Kinetic ThemeToggle Primitive — Arc-AA Standard
- * Combines useSyncExternalStore with 180° spring icon rotation and tactile scale feedback.
+ * Uses simultaneous cross-rotation with zero blank-frame latency.
  */
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
@@ -39,26 +38,22 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={toggleTheme}
-      className={`btn-tactile relative inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 overflow-hidden cursor-pointer ${className}`}
+      className={`btn-tactile relative inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer ${className}`}
       title={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-label="Toggle visual theme"
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={isDark ? "dark" : "light"}
-          initial={{ rotate: -90, scale: 0.75, opacity: 0 }}
-          animate={{ rotate: 0, scale: 1, opacity: 1 }}
-          exit={{ rotate: 90, scale: 0.75, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 450, damping: 25 }}
-          className="flex items-center justify-center"
-        >
-          {isDark ? (
-            <Moon className="w-4 h-4 text-zinc-100" />
-          ) : (
-            <Sun className="w-4 h-4 text-zinc-900" />
-          )}
-        </motion.div>
-      </AnimatePresence>
+      <div className="relative w-4 h-4 flex items-center justify-center">
+        <Sun
+          className={`w-4 h-4 text-zinc-900 absolute transition-all duration-200 ease-out ${
+            isDark ? "rotate-90 scale-0 opacity-0 pointer-events-none" : "rotate-0 scale-100 opacity-100"
+          }`}
+        />
+        <Moon
+          className={`w-4 h-4 text-zinc-100 absolute transition-all duration-200 ease-out ${
+            isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0 pointer-events-none"
+          }`}
+        />
+      </div>
     </button>
   );
 }

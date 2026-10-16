@@ -10,12 +10,13 @@ interface AnimatedCounterProps {
   prefix?: string;
   suffix?: string;
   className?: string;
+  animateOnMount?: boolean;
 }
 
 /**
- * AnimatedCounter Primitive — 120 FPS Compositor-Grade Leaf Node
- * Directly interpolates textContent using requestAnimationFrame and cubic ease-out.
- * Zero React state cascades, zero layout shifts with tabular-nums.
+ * AnimatedCounter Primitive — 120 FPS Compositor-Grade Tabular Counter
+ * Directly interpolates textContent on live data changes without initial-mount count-up jitter.
+ * Locked with `tabular-nums` to eliminate layout jitter and visual width shifts.
  */
 export function AnimatedCounter({
   value,
@@ -25,9 +26,11 @@ export function AnimatedCounter({
   prefix = "",
   suffix = "",
   className = "",
+  animateOnMount = false,
 }: AnimatedCounterProps) {
   const spanRef = useRef<HTMLSpanElement>(null);
-  const prevValueRef = useRef<number>(0);
+  const prevValueRef = useRef<number>(animateOnMount ? 0 : value);
+  const isFirstMountRef = useRef<boolean>(true);
   const rafRef = useRef<number | null>(null);
 
   const format = useCallback(
@@ -50,6 +53,16 @@ export function AnimatedCounter({
 
   useEffect(() => {
     if (!spanRef.current) return;
+
+    // Handle initial mount stability
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      if (!animateOnMount) {
+        prevValueRef.current = value;
+        spanRef.current.textContent = format(value);
+        return;
+      }
+    }
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
@@ -92,7 +105,7 @@ export function AnimatedCounter({
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [value, durationMs, format]);
+  }, [value, durationMs, format, animateOnMount]);
 
   return (
     <span

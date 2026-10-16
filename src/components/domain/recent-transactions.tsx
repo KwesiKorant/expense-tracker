@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
 import { ArrowRight, ArrowDownRight, ArrowUpRight, Plus, FileSpreadsheet } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import type { TransactionItem } from "@/components/domain/transaction-table";
@@ -89,17 +88,9 @@ export function RecentTransactions({
             </div>
           </div>
         ) : (
-          displayItems.map((tx, index) => (
-            <motion.div
+          displayItems.map((tx) => (
+            <div
               key={tx.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 28,
-                delay: index * 0.035,
-              }}
               className="py-3 flex items-center justify-between gap-4 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 -mx-2 px-2 rounded-lg transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -146,7 +137,7 @@ export function RecentTransactions({
                   {formatCurrency(tx.amount)}
                 </span>
               </div>
-            </motion.div>
+            </div>
           ))
         )}
       </div>

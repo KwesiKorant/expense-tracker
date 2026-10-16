@@ -63,13 +63,10 @@ body {
   transform: scale(0.97);
 }
 
-/* Interactive Card Desktop Float */
+/* Interactive Card Desktop Polish (Zero-Translate Stability) */
 @media (hover: hover) and (pointer: fine) {
   .interactive-card {
-    transition: transform 180ms var(--ease-snappy), border-color 180ms ease;
-  }
-  .interactive-card:hover {
-    transform: translate3d(0, -2px, 0);
+    transition: border-color 150ms ease, background-color 150ms ease;
   }
 }
 

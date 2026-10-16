@@ -2,7 +2,6 @@
 
 import React from "react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
-import { TextReveal } from "@/components/ui/text-reveal";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
 
@@ -39,9 +38,11 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={40}>
-              <AnimatedCounter value={totalIncome} formatAsCurrency={true} />
-            </TextReveal>
+            <AnimatedCounter
+              value={totalIncome}
+              formatAsCurrency={true}
+              animateOnMount={false}
+            />
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
@@ -63,9 +64,11 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={80}>
-              <AnimatedCounter value={totalExpenses} formatAsCurrency={true} />
-            </TextReveal>
+            <AnimatedCounter
+              value={totalExpenses}
+              formatAsCurrency={true}
+              animateOnMount={false}
+            />
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
@@ -87,9 +90,11 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-28 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={120}>
-              <AnimatedCounter value={netBalance} formatAsCurrency={true} />
-            </TextReveal>
+            <AnimatedCounter
+              value={netBalance}
+              formatAsCurrency={true}
+              animateOnMount={false}
+            />
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">
@@ -111,14 +116,13 @@ export function KpiStrip({
           {isLoading ? (
             <div className="w-20 h-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
           ) : (
-            <TextReveal delayMs={160}>
-              <AnimatedCounter
-                value={Number.isFinite(savingsRate) ? savingsRate : 0}
-                formatAsCurrency={false}
-                suffix="%"
-                decimals={1}
-              />
-            </TextReveal>
+            <AnimatedCounter
+              value={Number.isFinite(savingsRate) ? savingsRate : 0}
+              formatAsCurrency={false}
+              suffix="%"
+              decimals={1}
+              animateOnMount={false}
+            />
           )}
         </div>
         <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-zinc-400 truncate">

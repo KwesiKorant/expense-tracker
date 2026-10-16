@@ -270,8 +270,10 @@ export function TransactionTable({
         />
       </div>
 
-      {/* Empty States (Rendered symmetrically across mobile and desktop) */}
-      {isOnboardingEmpty ? (
+      {/* Table Content Stage with Reserved Height to eliminate page shifting during filtering */}
+      <div className="min-h-[460px] md:min-h-[500px] flex flex-col justify-start">
+        {/* Empty States (Rendered symmetrically across mobile and desktop) */}
+        {isOnboardingEmpty ? (
         <div className="py-14 text-center text-zinc-400">
           <div className="flex flex-col items-center justify-center gap-2.5 max-w-sm mx-auto">
             <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 mb-1">
@@ -604,6 +606,7 @@ export function TransactionTable({
           </div>
         </>
       )}
+      </div>
 
       {/* Pagination Footer */}
       {totalPages > 1 && (
