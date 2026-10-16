@@ -8,6 +8,7 @@ import {
   Cell,
   Tooltip,
 } from "recharts";
+import { motion, AnimatePresence } from "motion/react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 
 interface CategoryDistributionItem {
@@ -81,7 +82,9 @@ export function CategoryDonutChart({
                         <div className="flex items-center gap-1.5 font-semibold text-zinc-900 dark:text-zinc-100">
                           <span
                             className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: `var(--mono-${(data.findIndex((d) => d.category === item.category) % 5) + 1})` }}
+                            style={{
+                              backgroundColor: `var(--mono-${(data.findIndex((d) => d.category === item.category) % 5) + 1})`,
+                            }}
                           />
                           {item.category}
                         </div>
@@ -96,18 +99,29 @@ export function CategoryDonutChart({
               </PieChart>
             </ResponsiveContainer>
 
-            {/* Centered Total Overlay */}
+            {/* Centered Total Overlay with Directional Text Reveal */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
               <span className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider">
                 Total
               </span>
-              <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                ${totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 0 })}
-              </span>
+              <div className="h-5 overflow-hidden flex items-center justify-center">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={totalExpenses}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+                    className="text-sm font-bold text-zinc-900 dark:text-zinc-100"
+                  >
+                    ${totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 0 })}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
-          {/* Full-Width Legend List with Progress Meters */}
+          {/* Full-Width Legend List with Compositor scaleX Progress Tracks */}
           <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1">
             {data.map((item, index) => {
               const shade = `var(--mono-${(index % 5) + 1})`;
@@ -122,7 +136,7 @@ export function CategoryDonutChart({
                         className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: shade }}
                       />
-                      <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                      <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate">
                         {item.category}
                       </span>
                     </div>
@@ -135,12 +149,12 @@ export function CategoryDonutChart({
                       </span>
                     </div>
                   </div>
-                  {/* Thin Subtly Animated Progress Track */}
+                  {/* Compositor-only scaleX Progress Track (zero layout reflow) */}
                   <div className="w-full h-1 bg-zinc-200/60 dark:bg-zinc-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all duration-500"
+                      className="w-full h-full rounded-full origin-left transition-transform duration-500 ease-out"
                       style={{
-                        width: `${item.percentage}%`,
+                        transform: `scaleX(${Math.max(0, Math.min(100, item.percentage)) / 100})`,
                         backgroundColor: shade,
                       }}
                     />

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, ArrowDownRight, ArrowUpRight, Plus, FileSpreadsheet } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import type { TransactionItem } from "@/components/domain/transaction-table";
@@ -63,83 +64,107 @@ export function RecentTransactions({
 
       {/* Content */}
       <div className="mt-2 divide-y divide-zinc-100 dark:divide-zinc-800/60">
-        {isLoading ? (
-          <div className="py-8 text-center text-xs text-zinc-400">
-            <div className="flex items-center justify-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-zinc-950 dark:bg-zinc-50 animate-ping" />
-              Loading recent entries...
-            </div>
-          </div>
-        ) : displayItems.length === 0 ? (
-          <div className="py-10 text-center text-zinc-400">
-            <div className="flex flex-col items-center justify-center gap-2">
-              <FileSpreadsheet className="w-7 h-7 text-zinc-300 dark:text-zinc-700" />
-              <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                No transactions recorded yet
-              </p>
-              <button
-                type="button"
-                onClick={onOpenAddModal}
-                className="btn-tactile mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Record First Entry
-              </button>
-            </div>
-          </div>
-        ) : (
-          displayItems.map((tx) => (
-            <div
-              key={tx.id}
-              className="py-3 flex items-center justify-between gap-4 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 -mx-2 px-2 rounded-lg transition-colors"
+        <AnimatePresence mode="popLayout" initial={false}>
+          {isLoading ? (
+            <motion.div
+              key="loading-recent"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="py-8 text-center text-xs text-zinc-400"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <div
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${
-                    tx.type === "INCOME"
-                      ? "bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-900 dark:border-zinc-200"
-                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
-                  }`}
+              <div className="flex items-center justify-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-zinc-950 dark:bg-zinc-50 animate-ping" />
+                Loading recent entries...
+              </div>
+            </motion.div>
+          ) : displayItems.length === 0 ? (
+            <motion.div
+              key="empty-recent"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+              className="py-10 text-center text-zinc-400"
+            >
+              <div className="flex flex-col items-center justify-center gap-2">
+                <FileSpreadsheet className="w-7 h-7 text-zinc-300 dark:text-zinc-700" />
+                <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                  No transactions recorded yet
+                </p>
+                <button
+                  type="button"
+                  onClick={onOpenAddModal}
+                  className="btn-tactile mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer"
                 >
-                  {tx.type === "INCOME" ? (
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  ) : (
-                    <ArrowDownRight className="w-3.5 h-3.5" />
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p
-                    className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate"
-                    title={tx.description || tx.category.name}
+                  <Plus className="w-3.5 h-3.5" />
+                  Record First Entry
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            displayItems.map((tx, idx) => (
+              <motion.div
+                key={tx.id}
+                layout
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{
+                  layout: { type: "spring", stiffness: 380, damping: 32 },
+                  opacity: { duration: 0.16, delay: idx * 0.03 },
+                  y: { type: "spring", stiffness: 400, damping: 30, delay: idx * 0.03 },
+                }}
+                className="py-3 flex items-center justify-between gap-4 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 -mx-2 px-2 rounded-lg transition-colors group cursor-default"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-transform duration-150 group-hover:scale-105 ${
+                      tx.type === "INCOME"
+                        ? "bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-900 dark:border-zinc-200"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
+                    }`}
                   >
-                    {tx.description || tx.category.name}
-                  </p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[11px] text-zinc-400">
-                      {formatDate(tx.date)}
-                    </span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-700/50">
-                      {tx.category.name}
-                    </span>
+                    {tx.type === "INCOME" ? (
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    ) : (
+                      <ArrowDownRight className="w-3.5 h-3.5" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p
+                      className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate"
+                      title={tx.description || tx.category.name}
+                    >
+                      {tx.description || tx.category.name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[11px] text-zinc-400">
+                        {formatDate(tx.date)}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-700/50">
+                        {tx.category.name}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="text-right shrink-0">
-                <span
-                  className={`text-xs font-semibold tabular-nums ${
-                    tx.type === "INCOME"
-                      ? "text-zinc-950 dark:text-zinc-50 font-bold"
-                      : "text-zinc-500 dark:text-zinc-400"
-                  }`}
-                >
-                  {tx.type === "INCOME" ? "+" : "-"}
-                  {formatCurrency(tx.amount)}
-                </span>
-              </div>
-            </div>
-          ))
-        )}
+                <div className="text-right shrink-0">
+                  <span
+                    className={`text-xs font-semibold tabular-nums ${
+                      tx.type === "INCOME"
+                        ? "text-zinc-950 dark:text-zinc-50 font-bold"
+                        : "text-zinc-500 dark:text-zinc-400"
+                    }`}
+                  >
+                    {tx.type === "INCOME" ? "+" : "-"}
+                    {formatCurrency(tx.amount)}
+                  </span>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </AnimatePresence>
       </div>
 
       {displayItems.length > 0 && (
