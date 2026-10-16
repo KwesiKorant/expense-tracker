@@ -7,6 +7,8 @@ export const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate",
+  "Pragma": "no-cache",
 };
 
 export interface ApiResponseOptions {

@@ -27,137 +27,198 @@
   --semantic-warning-surface: rgba(245, 158, 11, 0.1);
   --semantic-destructive: #dc2626;
 
-  /* Glass Tier Architecture: Default Tier 1 (High GPU) */
-  --glass-header-bg: rgba(255, 255, 255, 0.80);
-  --glass-header-blur: blur(12px);
-  --glass-panel-bg: rgba(255, 255, 255, 0.95);
-  --glass-panel-blur: blur(16px);
-  --glass-backdrop-bg: rgba(0, 0, 0, 0.60);
-  --glass-backdrop-blur: blur(6px);
-  --glass-pill-bg: rgba(255, 255, 255, 0.90);
-  --glass-pill-blur: blur(8px);
-}
-
-.dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #121215;
-  --card-foreground: #fafafa;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #d4d4d8;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --chart-income: #fafafa;
-  --chart-expenses: #52525b;
-  --mono-1: #ffffff;
-  --mono-2: #d4d4d8;
-  --mono-3: #a1a1aa;
-  --mono-4: #71717a;
-  --mono-5: #52525b;
-  --semantic-income: #34d399;
-  --semantic-income-surface: rgba(16, 185, 129, 0.15);
-  --semantic-expense: #fb7185;
-  --semantic-expense-surface: rgba(244, 63, 94, 0.15);
-  --semantic-warning: #fbbf24;
-  --semantic-warning-surface: rgba(245, 158, 11, 0.15);
-  --semantic-destructive: #ef4444;
-
-  /* Glass Tier Architecture: Dark Tier 1 (High GPU) */
-  --glass-header-bg: rgba(9, 9, 11, 0.80);
-  --glass-panel-bg: rgba(18, 18, 21, 0.95);
-  --glass-backdrop-bg: rgba(0, 0, 0, 0.65);
-  --glass-pill-bg: rgba(24, 24, 27, 0.90);
 }
 
 /* =========================================================================
-   Separation Tier Architecture: Tier 2 Lightweight Zero-GPU Glass Mimic
-   Activated when:
-   - Device has low capability (hardwareConcurrency < 4, deviceMemory < 4, or saveData active)
-   - OS has Reduce Transparency active (prefers-reduced-transparency: reduce)
-   - Browser lacks backdrop-filter support (@supports not (backdrop-filter: blur(1px)))
-   Replaces expensive raster blurs with crisp, calibrated opaque surfaces with 0 GPU sampling overhead.
+   Glass Separation Tier Architecture
+   - Tier 1 (Default): Direct hardware-accelerated backdrop blur with translucent tint.
+   - Tier 1 (High GPU / Translucent Frosted Glass):
+     Direct hardware-accelerated backdrop blur with rich frosted density (85%-88% tint).
+     Scrolled content underneath is cleanly diffused with 16px blur + 180% saturation.
+   - Tier 2 (Zero-GPU 100% Solid Mimic):
+     100% solid, completely non-transparent surfaces with zero blur calculation.
+     Zero underlying bleed-through, zero GPU fill overhead.
+     Activated on low-capability mobile devices (data-blur-tier="low"), OS Reduce Transparency,
+     or browsers lacking backdrop-filter support.
    ========================================================================= */
-html[data-blur-tier="low"] {
-  --glass-header-bg: rgba(255, 255, 255, 0.98);
-  --glass-header-blur: none;
-  --glass-panel-bg: #ffffff;
-  --glass-panel-blur: none;
-  --glass-backdrop-bg: rgba(0, 0, 0, 0.78);
-  --glass-backdrop-blur: none;
-  --glass-pill-bg: #ffffff;
-  --glass-pill-blur: none;
-}
 
-html[data-blur-tier="low"].dark,
-html[data-blur-tier="low"] .dark {
-  --glass-header-bg: rgba(12, 12, 14, 0.98);
-  --glass-panel-bg: #121215;
-  --glass-backdrop-bg: rgba(0, 0, 0, 0.85);
-  --glass-pill-bg: #18181b;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --glass-header-bg: rgba(255, 255, 255, 0.98);
-    --glass-header-blur: none;
-    --glass-panel-bg: #ffffff;
-    --glass-panel-blur: none;
-    --glass-backdrop-bg: rgba(0, 0, 0, 0.78);
-    --glass-backdrop-blur: none;
-    --glass-pill-bg: #ffffff;
-    --glass-pill-blur: none;
-  }
-  .dark {
-    --glass-header-bg: rgba(12, 12, 14, 0.98);
-    --glass-panel-bg: #121215;
-    --glass-backdrop-bg: rgba(0, 0, 0, 0.85);
-    --glass-pill-bg: #18181b;
-  }
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  :root {
-    --glass-header-bg: rgba(255, 255, 255, 0.98);
-    --glass-header-blur: none;
-    --glass-panel-bg: #ffffff;
-    --glass-panel-blur: none;
-    --glass-backdrop-bg: rgba(0, 0, 0, 0.78);
-    --glass-backdrop-blur: none;
-    --glass-pill-bg: #ffffff;
-    --glass-pill-blur: none;
-  }
-  .dark {
-    --glass-header-bg: rgba(12, 12, 14, 0.98);
-    --glass-panel-bg: #121215;
-    --glass-backdrop-bg: rgba(0, 0, 0, 0.85);
-    --glass-pill-bg: #18181b;
-  }
-}
-
-/* Glass Architecture Utility Classes with safe default fallbacks */
+/* Tier 1 (High GPU / Translucent Frosted Glass) */
 .glass-header {
-  background-color: var(--glass-header-bg, rgba(255, 255, 255, 0.98));
-  backdrop-filter: var(--glass-header-blur, none);
-  -webkit-backdrop-filter: var(--glass-header-blur, none);
+  background-color: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+}
+.dark .glass-header,
+.dark.glass-header {
+  background-color: rgba(9, 9, 11, 0.85);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
 }
 
 .glass-panel {
-  background-color: var(--glass-panel-bg, #ffffff);
-  backdrop-filter: var(--glass-panel-blur, none);
-  -webkit-backdrop-filter: var(--glass-panel-blur, none);
+  background-color: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+}
+.dark .glass-panel,
+.dark.glass-panel {
+  background-color: rgba(18, 18, 21, 0.96);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
 }
 
 .glass-backdrop {
-  background-color: var(--glass-backdrop-bg, rgba(0, 0, 0, 0.75));
-  backdrop-filter: var(--glass-backdrop-blur, none);
-  -webkit-backdrop-filter: var(--glass-backdrop-blur, none);
+  background-color: rgba(0, 0, 0, 0.70);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.dark .glass-backdrop,
+.dark.glass-backdrop {
+  background-color: rgba(0, 0, 0, 0.78);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .glass-pill {
-  background-color: var(--glass-pill-bg, #ffffff);
-  backdrop-filter: var(--glass-pill-blur, none);
-  -webkit-backdrop-filter: var(--glass-pill-blur, none);
+  background-color: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.dark .glass-pill,
+.dark.glass-pill {
+  background-color: rgba(24, 24, 27, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Tier 2: Zero-GPU 100% Solid Mimic (Completely non-transparent) */
+html[data-blur-tier="low"] .glass-header {
+  background-color: #ffffff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-blur-tier="low"].dark .glass-header,
+html[data-blur-tier="low"] .dark .glass-header,
+html[data-blur-tier="low"] .dark.glass-header {
+  background-color: #09090b !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-blur-tier="low"] .glass-panel {
+  background-color: #ffffff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-blur-tier="low"].dark .glass-panel,
+html[data-blur-tier="low"] .dark .glass-panel,
+html[data-blur-tier="low"] .dark.glass-panel {
+  background-color: #121215 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-blur-tier="low"] .glass-backdrop {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-blur-tier="low"] .glass-pill {
+  background-color: #ffffff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-blur-tier="low"].dark .glass-pill,
+html[data-blur-tier="low"] .dark .glass-pill,
+html[data-blur-tier="low"] .dark.glass-pill {
+  background-color: #18181b !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Accessibility: OS Reduce Transparency Override */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-header {
+    background-color: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .dark .glass-header,
+  .dark.glass-header {
+    background-color: #09090b !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-panel {
+    background-color: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .dark .glass-panel,
+  .dark.glass-panel {
+    background-color: #121215 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-backdrop {
+    background-color: rgba(0, 0, 0, 0.92) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-pill {
+    background-color: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .dark .glass-pill,
+  .dark.glass-pill {
+    background-color: #18181b !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* Unsupported Browser Fallback */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-header {
+    background-color: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .dark .glass-header,
+  .dark.glass-header {
+    background-color: #09090b !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-panel {
+    background-color: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .dark .glass-panel,
+  .dark.glass-panel {
+    background-color: #121215 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-backdrop {
+    background-color: rgba(0, 0, 0, 0.92) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-pill {
+    background-color: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .dark .glass-pill,
+  .dark.glass-pill {
+    background-color: #18181b !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
 }
 
 html {

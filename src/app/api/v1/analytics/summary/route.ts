@@ -32,14 +32,24 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const targetMonthQuery = searchParams.get("month"); // e.g. "2026-10"
 
-    // Fetch all active transactions for the user
+    // Fetch all active transactions for the user (lean projection)
     const transactions = await prisma.transaction.findMany({
       where: {
         userId: auth.user.userId,
         isArchived: false,
       },
-      include: {
-        category: true,
+      select: {
+        id: true,
+        date: true,
+        amount: true,
+        type: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            color: true,
+          },
+        },
       },
       orderBy: { date: "asc" },
     });

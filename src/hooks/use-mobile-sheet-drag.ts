@@ -34,7 +34,7 @@ export function useMobileSheetDrag(onDismiss: () => void) {
 
   const dragControls = useDragControls();
   const y = useMotionValue(0);
-  const backdropOpacity = useTransform(y, [0, 240], [0.65, 0]);
+  const backdropOpacity = useTransform(y, [0, 240], [1, 0]);
 
   const handleDragEnd = (
     _event: MouseEvent | TouchEvent | PointerEvent,

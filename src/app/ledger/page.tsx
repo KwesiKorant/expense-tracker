@@ -88,42 +88,104 @@ export default function LedgerPage() {
     }
   }
 
-  // Transaction archive handler
+  // Optimistic transaction archive handler (0ms perceived latency)
   const handleArchive = async (id: string) => {
+    await queryClient.cancelQueries({ queryKey: ["transactions"] });
+    const currentKey = queryKeys.ledgerTransactions(ledgerParams);
+    const previousLedgerData = queryClient.getQueryData<any>(currentKey);
+
+    // Optimistically remove the transaction from the current view immediately
+    queryClient.setQueryData(currentKey, (old: any) => {
+      if (!old || !Array.isArray(old.transactions)) return old;
+      return {
+        ...old,
+        transactions: old.transactions.filter((tx: any) => tx.id !== id),
+        pagination: {
+          ...old.pagination,
+          total: Math.max(0, (old.pagination?.total || 1) - 1),
+        },
+      };
+    });
+
     try {
       const res = await fetch(`/api/v1/transactions/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
-        queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      }
+      if (!res.ok) throw new Error("Failed to archive transaction");
+      // Silently sync background analytics and counters without blocking the UI
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"], refetchType: "none" });
     } catch (err) {
+      if (previousLedgerData) {
+        queryClient.setQueryData(currentKey, previousLedgerData);
+      }
       console.error("Archive failed:", err);
+      throw err;
     }
   };
 
-  // Transaction restore handler
+  // Optimistic transaction restore handler (0ms perceived latency)
   const handleRestore = async (id: string) => {
+    await queryClient.cancelQueries({ queryKey: ["transactions"] });
+    const currentKey = queryKeys.ledgerTransactions(ledgerParams);
+    const previousLedgerData = queryClient.getQueryData<any>(currentKey);
+
+    // If currently viewing archived items, optimistically remove it from the list
+    if (showArchived) {
+      queryClient.setQueryData(currentKey, (old: any) => {
+        if (!old || !Array.isArray(old.transactions)) return old;
+        return {
+          ...old,
+          transactions: old.transactions.filter((tx: any) => tx.id !== id),
+          pagination: {
+            ...old.pagination,
+            total: Math.max(0, (old.pagination?.total || 1) - 1),
+          },
+        };
+      });
+    }
+
     try {
       const res = await fetch(`/api/v1/transactions/${id}/restore`, { method: "POST" });
-      if (res.ok) {
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
-        queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      }
+      if (!res.ok) throw new Error("Failed to restore transaction");
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     } catch (err) {
+      if (previousLedgerData) {
+        queryClient.setQueryData(currentKey, previousLedgerData);
+      }
       console.error("Restore failed:", err);
+      throw err;
     }
   };
 
-  // Permanent purge handler
+  // Optimistic permanent purge handler (0ms perceived latency)
   const handlePermanentDelete = async (id: string) => {
+    await queryClient.cancelQueries({ queryKey: ["transactions"] });
+    const currentKey = queryKeys.ledgerTransactions(ledgerParams);
+    const previousLedgerData = queryClient.getQueryData<any>(currentKey);
+
+    queryClient.setQueryData(currentKey, (old: any) => {
+      if (!old || !Array.isArray(old.transactions)) return old;
+      return {
+        ...old,
+        transactions: old.transactions.filter((tx: any) => tx.id !== id),
+        pagination: {
+          ...old.pagination,
+          total: Math.max(0, (old.pagination?.total || 1) - 1),
+        },
+      };
+    });
+
     try {
       const res = await fetch(`/api/v1/transactions/${id}?permanent=true`, { method: "DELETE" });
-      if (res.ok) {
-        queryClient.invalidateQueries({ queryKey: ["transactions"] });
-        queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      }
+      if (!res.ok) throw new Error("Failed to purge transaction");
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"], refetchType: "none" });
     } catch (err) {
+      if (previousLedgerData) {
+        queryClient.setQueryData(currentKey, previousLedgerData);
+      }
       console.error("Permanent delete failed:", err);
+      throw err;
     }
   };
 

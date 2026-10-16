@@ -41,9 +41,9 @@ export async function POST(req: NextRequest, { params }: RouteProps) {
       return errorResponse("NOT_FOUND", "Transaction record not found.", 404, undefined, { rateLimit });
     }
 
-    // Atomic restoration lifecycle and RESTORE audit log
-    const restored = await prisma.$transaction(async (tx) => {
-      const updated = await tx.transaction.update({
+    // Atomic restoration lifecycle and RESTORE audit log in a single pipelined round-trip
+    const [restored] = await prisma.$transaction([
+      prisma.transaction.update({
         where: { id: existing.id },
         data: {
           isArchived: false,
@@ -60,21 +60,18 @@ export async function POST(req: NextRequest, { params }: RouteProps) {
             },
           },
         },
-      });
-
-      await tx.auditLog.create({
+      }),
+      prisma.auditLog.create({
         data: {
-          transactionId: updated.id,
+          transactionId: existing.id,
           action: "RESTORE",
           details: JSON.stringify({
             event: "Transaction restored from archive",
           }),
           performedBy: auth.user.userId,
         },
-      });
-
-      return updated;
-    });
+      }),
+    ]);
 
     return successResponse(
       {

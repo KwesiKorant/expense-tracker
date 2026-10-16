@@ -249,20 +249,19 @@ export async function DELETE(req: NextRequest, { params }: RouteProps) {
       );
     }
 
-    // Atomic soft-archival lifecycle and ARCHIVE audit log
-    const archived = await prisma.$transaction(async (tx) => {
-      const now = new Date();
-      const updated = await tx.transaction.update({
+    // Atomic soft-archival lifecycle and ARCHIVE audit log in a single pipelined round-trip
+    const now = new Date();
+    const [archived] = await prisma.$transaction([
+      prisma.transaction.update({
         where: { id: existing.id },
         data: {
           isArchived: true,
           archivedAt: now,
         },
-      });
-
-      await tx.auditLog.create({
+      }),
+      prisma.auditLog.create({
         data: {
-          transactionId: updated.id,
+          transactionId: existing.id,
           action: "ARCHIVE",
           details: JSON.stringify({
             event: "Transaction soft-archived",
@@ -270,10 +269,8 @@ export async function DELETE(req: NextRequest, { params }: RouteProps) {
           }),
           performedBy: auth.user.userId,
         },
-      });
-
-      return updated;
-    });
+      }),
+    ]);
 
     return successResponse(
       {

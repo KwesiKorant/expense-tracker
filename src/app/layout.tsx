@@ -32,7 +32,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var isLow=(window.matchMedia('(prefers-reduced-transparency: reduce)').matches||(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<4)||(navigator.deviceMemory&&navigator.deviceMemory<4)||(navigator.connection&&navigator.connection.saveData));if(isLow){document.documentElement.dataset.blurTier='low';}}catch(e){}`,
+            __html: `try{var isTouch=('ontouchstart' in window)||(navigator.maxTouchPoints>1)||/iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);var isReduced=window.matchMedia('(prefers-reduced-transparency: reduce)').matches;var isDataSaver=Boolean(navigator.connection&&navigator.connection.saveData);var isLowHardware=isTouch&&((navigator.hardwareConcurrency&&navigator.hardwareConcurrency<4)||(navigator.deviceMemory&&navigator.deviceMemory<3));if(isReduced||isDataSaver||isLowHardware){document.documentElement.dataset.blurTier='low';}else{document.documentElement.dataset.blurTier='high';}}catch(e){}`,
           }}
         />
       </head>

@@ -18,15 +18,18 @@ function evaluateTier(): BlurTier {
     return "low";
   }
 
-  // 3. Hardware Concurrency check (budget or heavily throttled chips have < 4 cores)
-  if (typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency < 4) {
-    return "low";
-  }
-
-  // 4. Device Memory check (Chromium API: devices with < 4GB RAM)
-  const mem = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
-  if (typeof mem === "number" && mem < 4) {
-    return "low";
+  // 3. Low-end mobile device check (< 4 cores or < 3GB RAM on touch/mobile devices)
+  // Desktop machines (Mac/PC) have dedicated/unified GPU pipelines and Safari on Mac intentionally
+  // clamps hardwareConcurrency to 2 for anti-fingerprinting. We must not downgrade desktop.
+  const isTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 1) || /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+  if (isTouch) {
+    if (typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency < 4) {
+      return "low";
+    }
+    const mem = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
+    if (typeof mem === "number" && mem < 3) {
+      return "low";
+    }
   }
 
   return "high";
@@ -48,8 +51,8 @@ function getSnapshot(): BlurTier {
         document.documentElement.dataset.blurTier = "low";
       }
     } else {
-      if (document.documentElement.dataset.blurTier === "low") {
-        delete document.documentElement.dataset.blurTier;
+      if (document.documentElement.dataset.blurTier !== "high") {
+        document.documentElement.dataset.blurTier = "high";
       }
     }
   }
