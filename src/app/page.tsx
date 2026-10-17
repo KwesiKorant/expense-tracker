@@ -7,6 +7,7 @@ import { CashFlowChart } from "@/components/domain/cash-flow-chart";
 import { CategoryDonutChart } from "@/components/domain/category-donut-chart";
 import { RecentTransactions } from "@/components/domain/recent-transactions";
 import { TransactionSheet } from "@/components/domain/transaction-sheet";
+import { FirstRunChecklist } from "@/components/domain/first-run-checklist";
 import { TextReveal } from "@/components/ui/text-reveal";
 import { ScrollToTop, ScrollToTopSentinel } from "@/components/ui/scroll-to-top";
 import {
@@ -90,6 +91,12 @@ export default function DashboardOverviewPage() {
         </div>
       </div>
 
+      {/* First-Run Progressive Onboarding Checklist (Clean & Dismissible) */}
+      <FirstRunChecklist
+        transactionCount={recentTransactions.length}
+        onOpenAddModal={() => setIsAddModalOpen(true)}
+      />
+
       {/* KPI Summary Cards */}
       <KpiStrip
         totalIncome={metrics.totalIncome}
@@ -103,13 +110,18 @@ export default function DashboardOverviewPage() {
       {/* Analytics Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <CashFlowChart data={cashFlowHistory} isLoading={isAnalyticsLoading} />
+          <CashFlowChart
+            data={cashFlowHistory}
+            isLoading={isAnalyticsLoading}
+            onOpenAddModal={() => setIsAddModalOpen(true)}
+          />
         </div>
         <div className="lg:col-span-1">
           <CategoryDonutChart
             data={categoryDistribution}
             totalExpenses={metrics.totalExpenses}
             isLoading={isAnalyticsLoading}
+            onOpenAddModal={() => setIsAddModalOpen(true)}
           />
         </div>
       </div>

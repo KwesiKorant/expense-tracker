@@ -13,7 +13,7 @@ import {
   Cell,
 } from "recharts";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, BarChart3, Plus } from "lucide-react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 import { TextReveal } from "@/components/ui/text-reveal";
 
@@ -26,6 +26,7 @@ interface CashFlowMonth {
 interface CashFlowChartProps {
   data: CashFlowMonth[];
   isLoading?: boolean;
+  onOpenAddModal?: () => void;
 }
 
 /**
@@ -34,7 +35,11 @@ interface CashFlowChartProps {
  * - Anti-clipping: Dedicated 54px Y-axis gutter and ample padding.
  * - Fluid horizontal viewport with hidden scrollbars and directional edge arrows.
  */
-export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
+export function CashFlowChart({
+  data,
+  isLoading = false,
+  onOpenAddModal,
+}: CashFlowChartProps) {
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -198,16 +203,50 @@ export function CashFlowChart({ data, isLoading = false }: CashFlowChartProps) {
             >
               Loading analytics trajectory...
             </motion.div>
-          ) : data.length === 0 ? (
+          ) : data.length === 0 || data.every((d) => d.income === 0 && d.expenses === 0) ? (
             <motion.div
               key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="flex items-center justify-center h-[240px] sm:h-[280px] text-xs text-zinc-400"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative flex flex-col items-center justify-center h-[240px] sm:h-[280px] px-4 text-center select-none overflow-hidden"
             >
-              No historical records found for this period.
+              {/* Subtle Ghost Wireframe Bar Silhouette */}
+              <div
+                className="absolute inset-0 flex items-end justify-center gap-4 sm:gap-6 px-8 pb-6 opacity-[0.06] dark:opacity-[0.04] pointer-events-none"
+                aria-hidden="true"
+              >
+                <div className="w-8 h-16 bg-zinc-950 dark:bg-white rounded-t" />
+                <div className="w-8 h-28 bg-zinc-950 dark:bg-white rounded-t" />
+                <div className="w-8 h-12 bg-zinc-950 dark:bg-white rounded-t" />
+                <div className="w-8 h-36 bg-zinc-950 dark:bg-white rounded-t" />
+                <div className="w-8 h-20 bg-zinc-950 dark:bg-white rounded-t" />
+                <div className="w-8 h-24 bg-zinc-950 dark:bg-white rounded-t" />
+              </div>
+
+              {/* Foreground Content Card */}
+              <div className="relative z-10 flex flex-col items-center max-w-sm">
+                <div className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-center text-zinc-500 dark:text-zinc-400 mb-2 shadow-xs">
+                  <BarChart3 className="w-4 h-4" />
+                </div>
+                <h4 className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Awaiting Cash Flow Activity
+                </h4>
+                <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xs">
+                  Monthly cash flow trajectories and income vs expense ratios will generate automatically after your first logged entry.
+                </p>
+                {onOpenAddModal && (
+                  <button
+                    type="button"
+                    onClick={onOpenAddModal}
+                    className="btn-tactile mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Record First Entry</span>
+                  </button>
+                )}
+              </div>
             </motion.div>
           ) : (
             <div

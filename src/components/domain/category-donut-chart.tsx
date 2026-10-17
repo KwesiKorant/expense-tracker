@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { motion, AnimatePresence } from "motion/react";
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
-import { X } from "lucide-react";
+import { X, PieChart as PieChartIcon, Plus } from "lucide-react";
 import { TextReveal } from "@/components/ui/text-reveal";
 
 interface CategoryDistributionItem {
@@ -24,6 +24,7 @@ interface CategoryDonutChartProps {
   data: CategoryDistributionItem[];
   totalExpenses: number;
   isLoading?: boolean;
+  onOpenAddModal?: () => void;
 }
 
 /**
@@ -36,6 +37,7 @@ export function CategoryDonutChart({
   data,
   totalExpenses,
   isLoading = false,
+  onOpenAddModal,
 }: CategoryDonutChartProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -93,8 +95,37 @@ export function CategoryDonutChart({
           Loading category allocation...
         </div>
       ) : data.length === 0 ? (
-        <div className="flex items-center justify-center h-[280px] text-xs text-zinc-400">
-          No expenditure data recorded for this month.
+        <div className="relative flex flex-col items-center justify-center h-[280px] px-4 text-center select-none overflow-hidden">
+          {/* Subtle Ghost Wireframe Concentric Ring Silhouette */}
+          <div
+            className="absolute inset-0 flex items-center justify-center opacity-[0.07] dark:opacity-[0.05] pointer-events-none"
+            aria-hidden="true"
+          >
+            <div className="w-32 h-32 rounded-full border-[7px] border-dashed border-zinc-950 dark:border-white" />
+          </div>
+
+          {/* Foreground Content Card */}
+          <div className="relative z-10 flex flex-col items-center max-w-xs">
+            <div className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-center text-zinc-500 dark:text-zinc-400 mb-2 shadow-xs">
+              <PieChartIcon className="w-4 h-4" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              No Category Allocation
+            </h4>
+            <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              Expenditure distribution percentages and category drilldowns will visualize here.
+            </p>
+            {onOpenAddModal && (
+              <button
+                type="button"
+                onClick={onOpenAddModal}
+                className="btn-tactile mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer shadow-xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Log Expense</span>
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
