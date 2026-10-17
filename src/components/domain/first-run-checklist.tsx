@@ -7,14 +7,16 @@ import { CheckCircle2, Circle, ArrowRight, Plus, Sparkles, X } from "lucide-reac
 import { EdgeCornerFrame } from "@/components/ui/edge-corner-frame";
 
 interface FirstRunChecklistProps {
-  transactionCount: number;
+  totalTransactions: number;
+  isLoading?: boolean;
   onOpenAddModal: () => void;
 }
 
 const STORAGE_KEY = "arcfield_first_run_dismissed";
 
 export function FirstRunChecklist({
-  transactionCount,
+  totalTransactions,
+  isLoading = false,
   onOpenAddModal,
 }: FirstRunChecklistProps) {
   const [isDismissed, setIsDismissed] = useState<boolean>(true); // default true for SSR safety
@@ -35,14 +37,17 @@ export function FirstRunChecklist({
     }
   };
 
-  // Only show if mounted, not manually dismissed, and user has fewer than 5 transactions
-  if (!mounted || isDismissed || transactionCount >= 5) {
+  // Prevent Flash of Unsettled State (FOUS):
+  // 1. Never render while data is still loading
+  // 2. Never render if not mounted or dismissed
+  // 3. Never render if the user already has recorded transactions
+  if (isLoading || !mounted || isDismissed || totalTransactions > 0) {
     return null;
   }
 
   const step1Done = true; // Account registered & authenticated
-  const step2Done = transactionCount > 0; // Recorded at least 1 transaction
-  const step3Done = transactionCount >= 2; // Explored cash flow / multiple records
+  const step2Done = totalTransactions > 0; // Recorded at least 1 transaction
+  const step3Done = totalTransactions >= 2; // Explored cash flow / multiple records
 
   const completedSteps = [step1Done, step2Done, step3Done].filter(Boolean).length;
   const progressPercent = Math.round((completedSteps / 3) * 100);

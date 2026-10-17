@@ -43,6 +43,8 @@ export default function DashboardOverviewPage() {
   });
 
   const recentTransactions = recentTransactionsData?.transactions || [];
+  const totalTransactions =
+    recentTransactionsData?.pagination?.total ?? recentTransactions.length;
 
   const metrics = analytics?.metrics || {
     totalIncome: 0,
@@ -93,7 +95,8 @@ export default function DashboardOverviewPage() {
 
       {/* First-Run Progressive Onboarding Checklist (Clean & Dismissible) */}
       <FirstRunChecklist
-        transactionCount={recentTransactions.length}
+        totalTransactions={totalTransactions}
+        isLoading={isRecentLoading}
         onOpenAddModal={() => setIsAddModalOpen(true)}
       />
 
