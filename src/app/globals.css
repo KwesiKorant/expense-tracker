@@ -280,7 +280,12 @@ body {
 }
 
 .text-reveal-item {
-  animation: textRevealUp var(--reveal-duration, 720ms) var(--ease-reveal) var(--reveal-delay, 0ms) both;
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-y, 14px), 0) scale3d(var(--reveal-scale, 0.98), var(--reveal-scale, 0.98), 1);
+}
+
+.text-reveal-item.text-revealed {
+  animation: textRevealUp var(--reveal-duration, 720ms) var(--ease-reveal) var(--reveal-delay, 0ms) forwards;
 }
 
 /* GPU Boundary Isolation for complex animated widgets and charts */
