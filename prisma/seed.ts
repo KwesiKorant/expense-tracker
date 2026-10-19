@@ -18,7 +18,7 @@ async function main() {
 
   const demoUser = await prisma.user.create({
     data: {
-      email: "demo@arcfield.dev",
+      email: "demo@expense.dev",
       passwordHash,
       fullName: "Alex Mercer",
       defaultCurrency: "USD",

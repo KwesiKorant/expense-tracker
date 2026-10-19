@@ -1,6 +1,6 @@
-# Arcfield Expense Tracker & Financial Analytics
+# Expense — Financial Ledger & Analytics
 
-> High-performance multi-tenant financial ledger and telemetry engine built with **Next.js 16 (Turbopack)**, **React 19**, **Prisma ORM**, and **Supabase (PostgreSQL 17)**. Engineered to Arcfield Application Architecture (Arc-AA) standards with 120 FPS compositor animations, 0ms optimistic UI mutations, and defense-in-depth security.
+> High-performance multi-tenant financial ledger and telemetry engine built with **Next.js 16 (Turbopack)**, **React 19**, **Prisma ORM**, and **Supabase (PostgreSQL 17)**. Engineered with 120 FPS compositor animations, 0ms optimistic UI mutations, and defense-in-depth security.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.4.1-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.3.0-blue?style=flat&logo=react)](https://react.dev/)
@@ -31,7 +31,7 @@
 
 ## Architectural Overview
 
-Arcfield Expense Tracker is engineered as an **institutional-grade personal & multi-tenant financial platform**. It combines strict zero-drift financial calculations (using arbitrary-precision `Decimal(12, 2)`) with a fluid 120 FPS compositor-only user interface.
+Expense is engineered as an **institutional-grade personal & multi-tenant financial platform**. It combines strict zero-drift financial calculations (using arbitrary-precision `Decimal(12, 2)`) with a fluid 120 FPS compositor-only user interface.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -207,8 +207,8 @@ npm run db:seed
 ```
 
 > **Demo Account Credentials:**
-> - **Email:** `demo@arcfield.dev`
-> - **Password:** `ArcfieldDemo2026!`
+> - **Email:** `demo@expense.dev`
+> - **Password:** `Password123!`
 
 ---
 
@@ -223,7 +223,7 @@ npm test
 ### Verified Acceptance Criteria:
 ```
 =======================================================
- Arcfield Application Architecture (Arc-AA) Verification
+ Expense Application Architecture Verification
 =======================================================
   ✔ AC-1: Authentication, registration, and unauthorized route rejection
   ✔ AC-2: Mathematical Anti-IDOR tenant isolation

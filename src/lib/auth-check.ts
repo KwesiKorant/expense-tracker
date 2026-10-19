@@ -3,7 +3,7 @@ import { errorResponse } from "./api-response";
 import type { NextResponse } from "next/server";
 
 export const SESSION_COOKIE_NAME = "expense_session";
-const JWT_SECRET = process.env.JWT_SECRET || "arcfield_expense_tracker_secure_jwt_secret_key_2026_min_32_chars";
+const JWT_SECRET = process.env.JWT_SECRET || "expense_tracker_secure_jwt_secret_key_2026_min_32_chars";
 const secretKey = new TextEncoder().encode(JWT_SECRET);
 
 export interface AuthUserPayload {
@@ -49,7 +49,7 @@ export async function getAuthUser(req: Request): Promise<AuthUserPayload | null>
     req.headers.get("x-test-bypass") === "true"
   ) {
     const testUserId = req.headers.get("x-test-user-id") || "demo_user_id";
-    const testEmail = req.headers.get("x-test-email") || "test@arcfield.dev";
+    const testEmail = req.headers.get("x-test-email") || "test@expense.dev";
     return {
       userId: testUserId,
       email: testEmail,

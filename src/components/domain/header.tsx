@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { LogOut, User as UserIcon, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/ui/logo";
 import {
   queryKeys,
   defaultLedgerParams,
@@ -84,14 +85,10 @@ export function Header({
             href="/"
             prefetch={true}
             onMouseEnter={prefetchOverview}
-            className="btn-tactile flex items-center gap-2.5 group shrink-0"
+            className="btn-tactile flex items-center group shrink-0"
+            aria-label="Expense Home"
           >
-            <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200 transition-transform duration-150 group-hover:scale-105">
-              ET
-            </div>
-            <span className="hidden sm:inline font-bold text-sm sm:text-base tracking-tight text-zinc-900 dark:text-zinc-50">
-              Expense Tracker
-            </span>
+            <Logo className="w-8 h-8 text-zinc-900 dark:text-zinc-100 transition-transform duration-150 group-hover:scale-105" />
           </Link>
 
           {/* Navigation Tabs with Kinematic Sliding Layout Pill */}
@@ -210,7 +207,7 @@ export function Header({
               </div>
 
               <h3 id="logout-dialog-title" className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-4">
-                Sign out of Expense Tracker?
+                Sign out of Expense?
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">
                 Are you sure you want to end your active session? You will need to log back in to access your ledger.

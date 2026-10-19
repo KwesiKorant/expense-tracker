@@ -82,7 +82,7 @@ async function test(name, fn) {
 
 async function runSuite() {
   console.log("\n=======================================================");
-  console.log(" Arcfield Application Architecture (Arc-AA) Verification");
+  console.log(" Expense Application Architecture Verification");
   console.log("=======================================================\n");
 
   await startServer();
@@ -109,7 +109,7 @@ async function runSuite() {
       assert(unauthBody.error === "UNAUTHORIZED", "Expected error: UNAUTHORIZED");
 
       // 2. Register User A
-      const emailA = `test-user-a-${Date.now()}@arcfield.dev`;
+      const emailA = `test-user-a-${Date.now()}@expense.dev`;
       const regRes = await fetch(`${BASE_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Forwarded-For": ip },
@@ -138,7 +138,7 @@ async function runSuite() {
       assert(meBody.data.id === userAId, "User ID matches registered user");
 
       // 4. Register User B for Anti-IDOR testing
-      const emailB = `test-user-b-${Date.now()}@arcfield.dev`;
+      const emailB = `test-user-b-${Date.now()}@expense.dev`;
       const regBRes = await fetch(`${BASE_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Forwarded-For": randomIp() },

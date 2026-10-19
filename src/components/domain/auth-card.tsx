@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/ui/logo";
 import {
   Lock,
   Mail,
@@ -78,7 +79,7 @@ export function AuthCard({ initialMode = "login" }: AuthCardProps) {
     if (mode !== "login") {
       handleModeSwitch("login");
     }
-    setEmail("demo@arcfield.dev");
+    setEmail("demo@expense.dev");
     setPassword("Password123!");
     setErrorMsg("");
   };
@@ -137,11 +138,9 @@ export function AuthCard({ initialMode = "login" }: AuthCardProps) {
       {/* Top Stable Anchor Navbar */}
       <header className="fixed top-0 left-0 right-0 p-4 sm:p-6 flex items-center justify-between max-w-6xl mx-auto w-full z-20">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-zinc-950 dark:bg-white flex items-center justify-center text-white dark:text-zinc-950 font-bold text-sm border border-zinc-800 dark:border-zinc-200">
-            ET
-          </div>
+          <Logo className="w-8 h-8 text-zinc-900 dark:text-zinc-100" />
           <span className="font-bold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">
-            Arcfield Expense Tracker
+            Expense
           </span>
         </div>
         <ThemeToggle />
@@ -233,7 +232,7 @@ export function AuthCard({ initialMode = "login" }: AuthCardProps) {
                 </h1>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                   {isLogin
-                    ? "Arcfield Application Architecture — Multi-Tenant Standard"
+                    ? "Multi-Tenant Financial Telemetry — Institutional Standard"
                     : "Start tracking expenses with 120 FPS compositor telemetry"}
                 </p>
               </motion.div>
@@ -301,7 +300,7 @@ export function AuthCard({ initialMode = "login" }: AuthCardProps) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@arcfield.dev"
+                  placeholder="name@expense.dev"
                   required
                   className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10"
                 />

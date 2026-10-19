@@ -12,7 +12,7 @@ interface FirstRunChecklistProps {
   onOpenAddModal: () => void;
 }
 
-const STORAGE_KEY = "arcfield_first_run_dismissed";
+const STORAGE_KEY = "expense_first_run_dismissed";
 
 export function FirstRunChecklist({
   totalTransactions,
@@ -71,7 +71,7 @@ export function FirstRunChecklist({
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xs sm:text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    Welcome to Arcfield Ledger
+                    Welcome to Expense
                   </h2>
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                     {progressPercent}% Complete

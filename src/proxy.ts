@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 import { SESSION_COOKIE_NAME, isValidRedirectUrl } from "./lib/auth-check";
 import { SECURITY_HEADERS } from "./lib/api-response";
 
-const JWT_SECRET = process.env.JWT_SECRET || "arcfield_expense_tracker_secure_jwt_secret_key_2026_min_32_chars";
+const JWT_SECRET = process.env.JWT_SECRET || "expense_tracker_secure_jwt_secret_key_2026_min_32_chars";
 const secretKey = new TextEncoder().encode(JWT_SECRET);
 
 export async function proxy(request: NextRequest) {

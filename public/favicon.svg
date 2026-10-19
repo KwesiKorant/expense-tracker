@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <style>
+    path { stroke: #09090b; }
+    @media (prefers-color-scheme: dark) {
+      path { stroke: #fafafa; }
+    }
+  </style>
+  <g stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Open Coin / Analytics Ring -->
+    <path d="M 396 340 A 164 164 0 1 1 340 116" />
+
+    <!-- Ascending Expense / Analytics Trend -->
+    <path d="M 168 304 L 236 236 L 288 288 L 408 168" />
+
+    <!-- Trend Arrowhead -->
+    <path d="M 328 168 H 408 V 248" />
+
+    <!-- Grounded Ledger Bar -->
+    <path d="M 184 360 H 328" />
+  </g>
+</svg>
